@@ -85,6 +85,45 @@ const REFERENCE_IDF: Record<string, number> = {
   "problem solving": 1.4,
   analytical: 1.5,
   collaboration: 1.2,
+  // Mobile
+  flutter: 2.8,
+  dart: 2.9,
+  android: 2.5,
+  ios: 2.5,
+  "react native": 3.0,
+  swift: 2.7,
+  kotlin: 2.7,
+  xcode: 2.8,
+  firebase: 2.6,
+  crashlytics: 3.2,
+  fastlane: 3.3,
+  "play store": 3.0,
+  "app store": 3.0,
+  bloc: 3.2,
+  riverpod: 3.4,
+  getx: 3.3,
+  provider: 2.8,
+  // Frontend
+  svelte: 3.0,
+  vite: 2.6,
+  figma: 2.4,
+  storybook: 2.8,
+  // Backend additions
+  nestjs: 2.8,
+  gin: 2.9,
+  fiber: 3.0,
+  prisma: 2.7,
+  sequelize: 2.6,
+  mongoose: 2.5,
+  // Data
+  pandas: 2.7,
+  numpy: 2.6,
+  matplotlib: 2.7,
+  jupyter: 2.6,
+  scikit: 3.0,
+  sklearn: 3.0,
+  huggingface: 3.5,
+  langchain: 3.6,
 };
 
 const DEFAULT_IDF = 1.0;
@@ -247,8 +286,18 @@ export function extractKeywords(text: string): ScoredKeyword[] {
     const idf = REFERENCE_IDF[raw] ?? REFERENCE_IDF[s] ?? DEFAULT_IDF;
     const tfidf = tf * idf;
 
-    // Filter out very low signal terms
-    if (tfidf < 0.001) continue;
+    // Layer 1 — minimum TF-IDF threshold (raise from 0.001 to 0.003)
+    if (tfidf < 0.003) continue;
+
+    // Layer 2 — unknown terms (not in REFERENCE_IDF) need higher bar
+    // If a term isn't in our reference corpus it's probably noise
+    const isKnownTerm =
+      REFERENCE_IDF[raw] !== undefined || REFERENCE_IDF[s] !== undefined;
+    if (!isKnownTerm && tfidf < 0.008) continue;
+
+    // Layer 3 — unknown terms must also appear multiple times in the JD
+    // A real required skill is mentioned more than once; noise often isn't
+    if (!isKnownTerm && count < 2) continue;
 
     results.push({
       term: raw,

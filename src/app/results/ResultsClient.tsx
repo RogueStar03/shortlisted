@@ -3,99 +3,23 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { AnalysisResult, KeywordMatch, FillerHit } from "@/lib/engine";
-
-function ScoreHero({ score, band, verdict }: {
-  score: number;
-  band: string;
-  verdict: string;
-}) {
-  const bandColor =
-    band === "strong" ? "#059669" :
-    band === "moderate" ? "#D97706" : "#DC2626";
-  const bandLabel =
-    band === "strong" ? "Strong Match" :
-    band === "moderate" ? "Moderate Match" : "Low Match";
-
-  return (
-    <div className="relative w-full overflow-hidden mb-8">
-      {/* Background gradient bar — full height of hero, width = score % */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="h-full transition-all duration-1000 ease-out"
-          style={{
-            width: `${score}%`,
-            background: score >= 70
-              ? "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.06), rgba(5,150,105,0.12))"
-              : score >= 40
-              ? "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.10))"
-              : "linear-gradient(to right, rgba(220,38,38,0.10), rgba(220,38,38,0.04))",
-          }}
-        />
-      </div>
-
-      {/* Thin score line at right edge of the bar */}
-      <div
-        className="absolute top-0 bottom-0 w-px transition-all duration-1000 ease-out"
-        style={{
-          left: `${score}%`,
-          backgroundColor: bandColor,
-          opacity: 0.3,
-        }}
-      />
-
-      {/* Content */}
-      <div className="flex flex-col items-center py-8 px-4 relative z-10">
-        {/* <ScoreArc score={score} band={band} /> */}
-        <div
-    className="mt-2 text-4xl font-semibold"
-    style={{ color: bandColor }}
-  >
-    {score}%
-  </div>
-        <p className="mt-1 text-xs font-medium" style={{ color: bandColor }}>
-          {bandLabel}
-        </p>
-        <p className="mt-2 text-sm text-gray-500 text-center max-w-md">
-          {verdict}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ── Score Arc ─────────────────────────────────────────────────────────────────
-function ScoreArc({ score, band }: { score: number; band: string }) {
-  const radius = 54;
-  const circumference = Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const color =
-    band === "strong" ? "#059669" :
-    band === "moderate" ? "#D97706" : "#DC2626";
-
-  return (
-    <svg width="140" height="80" viewBox="0 0 140 80">
-      <path d="M 14 70 A 56 56 0 0 1 126 70" fill="none" stroke="#F3F4F6"
-        strokeWidth="10" strokeLinecap="round" />
-      <path d="M 14 70 A 56 56 0 0 1 126 70" fill="none" stroke={color}
-        strokeWidth="10" strokeLinecap="round"
-        strokeDasharray={circumference} strokeDashoffset={offset}
-        style={{ transition: "stroke-dashoffset 1s ease" }} />
-      <text x="70" y="62" textAnchor="middle" fontSize="26"
-        fontWeight="700" fill={color}>{score}%</text>
-    </svg>
-  );
-}
+import ScoreBar from "@/components/ui/scoreBar";
 
 // ── Keyword Chips ─────────────────────────────────────────────────────────────
 const CATEGORY_LABELS: Record<string, string> = {
-  technical: "Technical", tool: "Tools",
-  soft: "Soft Skills", general: "General",
+  technical: "Technical",
+  tool: "Tools",
+  soft: "Soft Skills",
+  general: "General",
 };
 
 // Preferred display order for categories
 const CATEGORY_ORDER = ["tool", "technical", "general", "soft"];
 
-function KeywordChips({ keywords, found }: {
+function KeywordChips({
+  keywords,
+  found,
+}: {
   keywords: KeywordMatch[];
   found: boolean;
 }) {
@@ -110,7 +34,7 @@ function KeywordChips({ keywords, found }: {
   }
 
   // Sort categories by preferred order
-  const sortedCategories = CATEGORY_ORDER.filter(c => grouped.has(c));
+  const sortedCategories = CATEGORY_ORDER.filter((c) => grouped.has(c));
 
   const chipStyle = found
     ? { bg: "#F0FDF4", text: "#166534", border: "#86EFAC" }
@@ -118,13 +42,13 @@ function KeywordChips({ keywords, found }: {
 
   return (
     <div className="space-y-3">
-      {sortedCategories.map(cat => (
+      {sortedCategories.map((cat) => (
         <div key={cat}>
           <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-1.5">
             {CATEGORY_LABELS[cat] ?? cat}
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {grouped.get(cat)!.map(kw => (
+            {grouped.get(cat)!.map((kw) => (
               <span
                 key={kw.term}
                 className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border font-medium"
@@ -135,7 +59,9 @@ function KeywordChips({ keywords, found }: {
                 }}
               >
                 {found ? "✓" : "+"} {kw.term}
-                <span className="opacity-50 font-normal">{kw.jdFrequency}×</span>
+                <span className="opacity-50 font-normal">
+                  {kw.jdFrequency}×
+                </span>
               </span>
             ))}
           </div>
@@ -146,7 +72,10 @@ function KeywordChips({ keywords, found }: {
 }
 
 // ── Filler Words with Click Popover ───────────────────────────────────────────
-function FillerHighlight({ resumeText, fillers }: {
+function FillerHighlight({
+  resumeText,
+  fillers,
+}: {
   resumeText: string;
   fillers: FillerHit[];
 }) {
@@ -162,7 +91,8 @@ function FillerHighlight({ resumeText, fillers }: {
   if (fillers.length === 0) {
     return (
       <div className="p-4 bg-green-50 rounded-lg text-sm text-green-700 border border-green-100">
-        No filler phrases detected — your resume language looks specific and action-oriented.
+        No filler phrases detected — your resume language looks specific and
+        action-oriented.
       </div>
     );
   }
@@ -188,7 +118,7 @@ function FillerHighlight({ resumeText, fillers }: {
       parts.push(
         <span key={`t-${cursor}`} className="whitespace-pre-wrap">
           {resumeText.slice(cursor, start)}
-        </span>
+        </span>,
       );
     }
 
@@ -211,7 +141,7 @@ function FillerHighlight({ resumeText, fillers }: {
         className="bg-amber-100 text-amber-900 border-b-2 border-amber-400 cursor-pointer rounded-sm px-0.5 hover:bg-amber-200 transition-colors"
       >
         {resumeText.slice(start, end)}
-      </span>
+      </span>,
     );
     cursor = end;
   }
@@ -220,7 +150,7 @@ function FillerHighlight({ resumeText, fillers }: {
     parts.push(
       <span key="t-end" className="whitespace-pre-wrap">
         {resumeText.slice(cursor)}
-      </span>
+      </span>,
     );
   }
 
@@ -254,11 +184,11 @@ function FillerHighlight({ resumeText, fillers }: {
               left: Math.min(
                 Math.max(activePopover.x - 128, 0),
                 // clamp so it doesn't overflow right edge
-                (containerRef.current?.offsetWidth ?? 600) - 260
+                (containerRef.current?.offsetWidth ?? 600) - 260,
               ),
               top: activePopover.y - 110,
             }}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Arrow */}
             <div
@@ -269,7 +199,7 @@ function FillerHighlight({ resumeText, fillers }: {
                   Math.max(activePopover.x - 128, 0) > 0
                     ? 124
                     : activePopover.x - 4,
-                  250
+                  250,
                 ),
               }}
             />
@@ -313,7 +243,7 @@ function ActionPlan({ result }: { result: AnalysisResult }) {
     });
   });
 
-  result.fillers.slice(0, 2).forEach(f => {
+  result.fillers.slice(0, 2).forEach((f) => {
     actions.push({
       priority: actions.length + 1,
       text: `Remove "${f.phrase}" — ${f.suggestion}`,
@@ -335,9 +265,13 @@ function ActionPlan({ result }: { result: AnalysisResult }) {
               : "bg-amber-50 border-amber-100 text-amber-800"
           }`}
         >
-          <span className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold bg-white border ${
-            action.type === "add" ? "border-blue-200 text-blue-600" : "border-amber-200 text-amber-600"
-          }`}>
+          <span
+            className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold bg-white border ${
+              action.type === "add"
+                ? "border-blue-200 text-blue-600"
+                : "border-amber-200 text-amber-600"
+            }`}
+          >
             {action.priority}
           </span>
           <span className="leading-relaxed">{action.text}</span>
@@ -351,13 +285,18 @@ function ActionPlan({ result }: { result: AnalysisResult }) {
 export default function ResultsClient() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [resumeText, setResumeText] = useState("");
-  const [activeTab, setActiveTab] = useState<"fillers" | "keywords">("keywords");
+  const [activeTab, setActiveTab] = useState<"fillers" | "keywords">(
+    "keywords",
+  );
   const router = useRouter();
 
   useEffect(() => {
     const stored = sessionStorage.getItem("shortlisted_result");
     const resume = sessionStorage.getItem("shortlisted_resume");
-    if (!stored || !resume) { router.replace("/analyze"); return; }
+    if (!stored || !resume) {
+      router.replace("/analyze");
+      return;
+    }
     try {
       setResult(JSON.parse(stored));
       setResumeText(resume);
@@ -369,18 +308,19 @@ export default function ResultsClient() {
   if (!result) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-pulse text-sm text-gray-400">Loading results...</div>
+        <div className="animate-pulse text-sm text-gray-400">
+          Loading results...
+        </div>
       </div>
     );
   }
 
   return (
     <main className="max-w-5xl mx-auto">
-
       {/* Score hero with full-width gradient bar */}
-      <ScoreHero
+      <ScoreBar
         score={result.score.score}
-        band={result.score.band}
+        band={result.score.band as "strong" | "moderate" | "poor"}
         verdict={result.score.verdict}
       />
 
@@ -434,7 +374,6 @@ export default function ResultsClient() {
         {/* Bottom section — two column on desktop */}
         <div className="border-t border-gray-100 pt-6">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_260px] gap-8">
-
             {/* Left — single tab: Filler Words */}
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -457,7 +396,6 @@ export default function ResultsClient() {
             <div className="md:border-l md:border-gray-100 md:pl-8">
               <ActionPlan result={result} />
             </div>
-
           </div>
         </div>
       </div>

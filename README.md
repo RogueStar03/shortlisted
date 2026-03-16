@@ -82,7 +82,7 @@ The tradeoff is that we can't do server-side ML or store scan history for free u
 **Prerequisites:** Node.js 22, pnpm
 
 ```bash
-git clone https://github.com/yourusername/shortlisted
+git clone https://github.com/RogueStar03/shortlisted
 cd shortlisted
 pnpm install
 ```

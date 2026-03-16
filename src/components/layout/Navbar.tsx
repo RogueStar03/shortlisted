@@ -17,14 +17,24 @@ export default function Navbar({ userEmail }: { userEmail?: string }) {
   return (
     <nav className="border-b border-gray-100 bg-white">
       <div className="max-w-5xl mx-auto px-4 h-12 flex items-center justify-between">
-        <Link href="/analyze" className="text-sm font-semibold text-gray-900 tracking-tight">
+        <Link
+          href="/analyze"
+          className="text-sm font-semibold text-gray-900 tracking-tight"
+        >
           Short<span className="text-blue-600">listed</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/analyze" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
+          <Link
+            href="/analyze"
+            className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
+          >
             Analyzer
           </Link>
-          <Link href="/tracker" className="text-xs text-gray-500 hover:text-gray-900 transition-colors">
+          <Link
+            href="/tracker"
+            prefetch={false}
+            className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
+          >
             Tracker
           </Link>
           {userEmail && (

@@ -39,7 +39,9 @@ export default function Navbar({ userEmail }: { userEmail?: string }) {
           </Link>
           {userEmail && (
             <>
-              <span className="text-xs text-gray-400">{userEmail}</span>
+              <Link href="/account" className="text-xs text-gray-400 hover:text-gray-900 transition-colors">
+                {userEmail}
+              </Link>
               <button
                 onClick={signOut}
                 className="text-xs text-gray-500 hover:text-gray-900 transition-colors"

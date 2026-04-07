@@ -148,8 +148,8 @@ src/
 | Resume analyzer                   | ✅ Complete    |
 | Auth (Google + email)             | ✅ Complete    |
 | Landing page                      | ✅ Complete    |
-| Application tracker (Kanban)      | ✅ Complete    |
-| Payments (Razorpay)               | 🔄 In progress |
+| Application tracker (Kanban)      | 🔄 In progress    |
+| Payments (Razorpay)               | ⏳ Planned     |
 | Follow-up reminders               | ⏳ Planned     |
 | Analytics dashboard               | ⏳ Planned     |
 | PDF resume upload                 | ⏳ v2          |

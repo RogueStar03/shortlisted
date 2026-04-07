@@ -1,6 +1,4 @@
-# Shortlisted
-
-**Built to get you shortlisted.**
+# Shortlisted - **Built to get you shortlisted.**
 
 A resume keyword analyzer and job application tracker. Paste your resume and a job description — get a match score, keyword gaps, filler word detection, and actionable fixes in under a second. Built for job seekers who are tired of getting ghosted.
 

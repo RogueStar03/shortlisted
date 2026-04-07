@@ -4,6 +4,14 @@ import { SCORE_BANDS } from "@/lib/constants/colors";
 
 type Band = keyof typeof SCORE_BANDS;
 
+const gradientMap: Record<Band, string> = {
+  strong:
+    "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.06), rgba(5,150,105,0.12))",
+  moderate:
+    "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.10))",
+  poor: "linear-gradient(to right, rgba(220,38,38,0.10), rgba(220,38,38,0.04))",
+};
+
 export default function ScoreBar({
   score,
   band,
@@ -17,16 +25,18 @@ export default function ScoreBar({
 }) {
   const { color, label } = SCORE_BANDS[band];
 
-  const gradientMap: Record<Band, string> = {
-    strong:
-      "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.06), rgba(5,150,105,0.12))",
-    moderate:
-      "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.10))",
-    poor: "linear-gradient(to right, rgba(220,38,38,0.10), rgba(220,38,38,0.04))",
-  };
-
   return (
-    <div className="relative w-full overflow-hidden">
+    <div
+      className="relative w-full overflow-hidden"
+      role="meter"
+      aria-valuenow={score}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label="Resume Match Score"
+    >
+      <span className="sr-only">
+        Score: {score}%, {label}
+      </span>
       {/* Gradient fill */}
       <div className="absolute inset-0 pointer-events-none">
         <div

@@ -38,9 +38,9 @@ export default function Button({
 }: ButtonProps) {
   const base = `inline-flex items-center justify-center font-medium rounded-lg border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${VARIANTS[variant]} ${SIZES[size]} ${className}`;
 
-  if (href) {
+  if (href && !disabled) {
     return (
-      <Link href={href} className={base}>
+      <Link href={href} className={base} onClick={onClick}>
         {children}
       </Link>
     );

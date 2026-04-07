@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const STEPS = [
   {
@@ -165,20 +165,24 @@ function MockBrowser({ state }: { state: (typeof MOCK_STATES)[0] }) {
 export default function HowItWorks() {
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    timerRef.current = setTimeout(() => {
       setVisible(false);
       setTimeout(() => {
         setActive((prev) => (prev + 1) % STEPS.length);
         setVisible(true);
       }, 300);
     }, 3000);
-    return () => clearInterval(timer);
-  }, []);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [active]);
 
   function goTo(index: number) {
     if (index === active) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
     setVisible(false);
     setTimeout(() => {
       setActive(index);
@@ -236,9 +240,9 @@ export default function HowItWorks() {
 
             {/* Progress dots */}
             <div className="flex gap-2 pl-4 mt-1">
-              {STEPS.map((_, i) => (
+              {STEPS.map((stepItem, i) => (
                 <button
-                  key={i}
+                  key={stepItem.step}
                   onClick={() => goTo(i)}
                   className={`h-1 rounded-full transition-all duration-300 ${
                     active === i ? "w-6 bg-blue-500" : "w-2 bg-gray-200"

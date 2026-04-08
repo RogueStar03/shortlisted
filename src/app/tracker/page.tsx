@@ -25,7 +25,7 @@ export default async function TrackerPage() {
     new Date(profile.plan_expires_at) > now;
 
   // Fetch applications — empty array for free users (paywall shown client side)
-  const applications = isPack ? await getApplications() : [];
+  const applications = isPack ? await getApplications(user.id) : [];
 
   return (
     <div className="min-h-screen bg-white">

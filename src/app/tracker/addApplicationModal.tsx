@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { ApplicationStatus } from "@/lib/supabase/applications";
+import type {
+  Application,
+  ApplicationStatus,
+} from "@/lib/supabase/applications";
 
 interface Props {
   onClose: () => void;
@@ -13,6 +16,18 @@ interface Props {
     jd_url: string | null;
     notes: string | null;
   }) => Promise<void>;
+  onEdit?: (
+    id: string,
+    data: {
+      company: string;
+      role: string;
+      status: ApplicationStatus;
+      applied_at: string;
+      jd_url: string | null;
+      notes: string | null;
+    },
+  ) => Promise<void>;
+  editingApp?: Application | null;
 }
 
 const STATUSES: { value: ApplicationStatus; label: string }[] = [
@@ -21,17 +36,27 @@ const STATUSES: { value: ApplicationStatus; label: string }[] = [
   { value: "interview", label: "Interview" },
   { value: "offer", label: "Offer" },
   { value: "rejected", label: "Rejected" },
+  { value: "withdrawn", label: "Withdrawn" },
 ];
 
-export default function AddApplicationModal({ onClose, onAdd }: Props) {
-  const [company, setCompany] = useState("");
-  const [role, setRole] = useState("");
-  const [status, setStatus] = useState<ApplicationStatus>("applied");
-  const [appliedAt, setAppliedAt] = useState(
-    new Date().toISOString().split("T")[0],
+export default function AddApplicationModal({
+  onClose,
+  onAdd,
+  onEdit,
+  editingApp,
+}: Props) {
+  const isEditing = !!editingApp;
+
+  const [company, setCompany] = useState(editingApp?.company ?? "");
+  const [role, setRole] = useState(editingApp?.role ?? "");
+  const [status, setStatus] = useState<ApplicationStatus>(
+    editingApp?.status ?? "applied",
   );
-  const [jdUrl, setJdUrl] = useState("");
-  const [notes, setNotes] = useState("");
+  const [appliedAt, setAppliedAt] = useState(
+    editingApp?.applied_at ?? new Date().toISOString().split("T")[0],
+  );
+  const [jdUrl, setJdUrl] = useState(editingApp?.jd_url ?? "");
+  const [notes, setNotes] = useState(editingApp?.notes ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,15 +68,22 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
     }
     setLoading(true);
     setError(null);
+
+    const payload = {
+      company: company.trim(),
+      role: role.trim(),
+      status,
+      applied_at: appliedAt,
+      jd_url: jdUrl.trim() || null,
+      notes: notes.trim() || null,
+    };
+
     try {
-      await onAdd({
-        company: company.trim(),
-        role: role.trim(),
-        status,
-        applied_at: appliedAt,
-        jd_url: jdUrl.trim() || null,
-        notes: notes.trim() || null,
-      });
+      if (isEditing && onEdit) {
+        await onEdit(editingApp.id, payload);
+      } else {
+        await onAdd(payload);
+      }
       onClose();
     } catch (err) {
       setError("Failed to save. Please try again.");
@@ -70,7 +102,7 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
       >
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-sm font-semibold text-gray-900">
-            Add application
+            {isEditing ? "Edit application" : "Add application"}
           </h2>
           <button
             onClick={onClose}
@@ -195,7 +227,11 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
               disabled={loading}
               className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
             >
-              {loading ? "Saving..." : "Add application"}
+              {loading
+                ? "Saving..."
+                : isEditing
+                  ? "Save changes"
+                  : "Add application"}
             </button>
           </div>
         </form>

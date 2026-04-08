@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -51,6 +51,12 @@ const COLUMNS: {
     color: "bg-gray-50 border-gray-100",
     dot: "bg-gray-300",
   },
+  {
+    id: "withdrawn",
+    label: "Withdrawn",
+    color: "bg-slate-50 border-slate-100",
+    dot: "bg-slate-300",
+  },
 ];
 
 const STATUS_COLORS: Record<ApplicationStatus, string> = {
@@ -68,7 +74,7 @@ function PaywallOverlay() {
     <div className="relative min-h-[600px]">
       {/* Blurred fake board */}
       <div className="filter blur-sm pointer-events-none select-none">
-        <div className="grid grid-cols-5 gap-4 px-4 py-6">
+        <div className="grid grid-cols-6 gap-4 px-4 py-6">
           {COLUMNS.map((col) => (
             <div key={col.id} className={`rounded-xl border p-3 ${col.color}`}>
               <div className="flex items-center gap-2 mb-3">
@@ -132,15 +138,61 @@ function PaywallOverlay() {
   );
 }
 
+// ── Confirm Dialog ───────────────────────────────────────────────────────────
+function ConfirmDialog({
+  title,
+  message,
+  confirmLabel,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-sm p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 mb-5">{message}</p>
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Application Card ──────────────────────────────────────────────────────────
 function AppCard({
   app,
   index,
   onDelete,
+  onEdit,
 }: {
   app: Application;
   index: number;
   onDelete: (id: string) => void;
+  onEdit: (app: Application) => void;
 }) {
   const daysAgo = Math.floor(
     (Date.now() - new Date(app.applied_at).getTime()) / (1000 * 60 * 60 * 24),
@@ -166,15 +218,28 @@ function AppCard({
               </p>
               <p className="text-xs text-gray-500 truncate">{app.role}</p>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (confirm(`Remove ${app.company}?`)) onDelete(app.id);
-              }}
-              className="text-gray-300 hover:text-red-400 transition-colors text-sm leading-none shrink-0"
-            >
-              ×
-            </button>
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(app);
+                }}
+                className="text-gray-300 hover:text-blue-500 transition-colors text-xs leading-none"
+                title="Edit"
+              >
+                ✎
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(app.id);
+                }}
+                className="text-gray-300 hover:text-red-400 transition-colors text-sm leading-none"
+                title="Delete"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between mt-2">
@@ -214,10 +279,12 @@ function Column({
   col,
   apps,
   onDelete,
+  onEdit,
 }: {
   col: (typeof COLUMNS)[0];
   apps: Application[];
   onDelete: (id: string) => void;
+  onEdit: (app: Application) => void;
 }) {
   return (
     <div
@@ -248,6 +315,7 @@ function Column({
                 app={app}
                 index={index}
                 onDelete={onDelete}
+                onEdit={onEdit}
               />
             ))}
             {provided.placeholder}
@@ -274,7 +342,9 @@ export default function TrackerClient({
   const [applications, setApplications] =
     useState<Application[]>(initialApplications);
   const [showModal, setShowModal] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [editingApp, setEditingApp] = useState<Application | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Application | null>(null);
+
 
   // Group by status
   const byStatus = (status: ApplicationStatus) =>
@@ -334,15 +404,54 @@ export default function TrackerClient({
     setApplications((prev) => [newApp, ...prev]);
   }
 
-  async function handleDelete(id: string) {
-    // Optimistic
-    setApplications((prev) => prev.filter((a) => a.id !== id));
+  function requestDelete(id: string) {
+    const app = applications.find((a) => a.id === id);
+    if (app) setDeleteTarget(app);
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    const removed = deleteTarget;
+    setDeleteTarget(null);
+    setApplications((prev) => prev.filter((a) => a.id !== removed.id));
     try {
-      const res = await fetch(`/api/applications/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/applications/${removed.id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Failed to delete");
     } catch {
-      // Refetch on failure — simple recovery
-      window.location.reload();
+      setApplications((prev) => [removed, ...prev]);
+    }
+  }
+
+  async function handleEdit(
+    id: string,
+    data: {
+      company: string;
+      role: string;
+      status: ApplicationStatus;
+      applied_at: string;
+      jd_url: string | null;
+      notes: string | null;
+    },
+  ) {
+    const previous = applications.find((a) => a.id === id);
+    setApplications((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...data } : a)),
+    );
+    try {
+      const res = await fetch(`/api/applications/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to update");
+    } catch {
+      if (previous) {
+        setApplications((prev) =>
+          prev.map((a) => (a.id === id ? previous : a)),
+        );
+      }
     }
   }
 
@@ -351,7 +460,7 @@ export default function TrackerClient({
     (a) => !["rejected", "withdrawn"].includes(a.status),
   ).length;
 
-  if (!true) return <PaywallOverlay />;
+  if (!isPack) return <PaywallOverlay />;
 
   return (
     <div className="min-h-screen bg-white">
@@ -378,13 +487,14 @@ export default function TrackerClient({
       {/* Kanban board */}
       <div className="p-4 overflow-x-auto">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-5 gap-3 min-w-[900px]">
+          <div className="grid grid-cols-6 gap-3 min-w-[1080px]">
             {COLUMNS.map((col) => (
               <Column
                 key={col.id}
                 col={col}
                 apps={byStatus(col.id)}
-                onDelete={handleDelete}
+                onDelete={requestDelete}
+                onEdit={(app) => setEditingApp(app)}
               />
             ))}
           </div>
@@ -413,6 +523,25 @@ export default function TrackerClient({
         <AddApplicationModal
           onClose={() => setShowModal(false)}
           onAdd={handleAdd}
+        />
+      )}
+
+      {editingApp && (
+        <AddApplicationModal
+          onClose={() => setEditingApp(null)}
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          editingApp={editingApp}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete application"
+          message={`Remove ${deleteTarget.company} — ${deleteTarget.role}? This cannot be undone.`}
+          confirmLabel="Delete"
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
         />
       )}
     </div>

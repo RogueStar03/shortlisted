@@ -138,12 +138,10 @@ function AppCard({
   app,
   index,
   onDelete,
-  onEdit,
 }: {
   app: Application;
   index: number;
   onDelete: (id: string) => void;
-  onEdit: (app: Application) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const daysAgo = Math.floor(
@@ -246,12 +244,10 @@ function Column({
   col,
   apps,
   onDelete,
-  onEdit,
 }: {
   col: (typeof COLUMNS)[0];
   apps: Application[];
   onDelete: (id: string) => void;
-  onEdit: (app: Application) => void;
 }) {
   return (
     <div
@@ -315,16 +311,6 @@ export default function TrackerClient({
   const [editingApp, setEditingApp] = useState<Application | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Application | null>(null);
 
-
-  // Celebration state
-  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
-  const [confetti, setConfetti] = useState<{ active: boolean; intensity: "normal" | "big" }>({ active: false, intensity: "normal" });
-  const [offerCard, setOfferCard] = useState<{ company: string; role: string } | null>(null);
-
-  function showToast(message: string) {
-    setToast({ message, visible: true });
-    setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2500);
-  }
 
   // Celebration state
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
@@ -410,7 +396,7 @@ export default function TrackerClient({
   async function handleDelete(id: string) {
     setApplications((prev) => prev.filter((a) => a.id !== id));
     try {
-      const res = await fetch(`/api/applications/${removed.id}`, {
+      const res = await fetch(`/api/applications/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");

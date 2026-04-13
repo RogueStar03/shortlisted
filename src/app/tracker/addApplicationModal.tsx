@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { ApplicationStatus } from "@/lib/supabase/applications";
+import type {
+  Application,
+  ApplicationStatus,
+} from "@/lib/supabase/applications";
 
 interface Props {
   onClose: () => void;
@@ -13,6 +16,18 @@ interface Props {
     jd_url: string | null;
     notes: string | null;
   }) => Promise<void>;
+  onEdit?: (
+    id: string,
+    data: {
+      company: string;
+      role: string;
+      status: ApplicationStatus;
+      applied_at: string;
+      jd_url: string | null;
+      notes: string | null;
+    },
+  ) => Promise<void>;
+  editingApp?: Application | null;
 }
 
 const STATUSES: { value: ApplicationStatus; label: string }[] = [
@@ -21,6 +36,7 @@ const STATUSES: { value: ApplicationStatus; label: string }[] = [
   { value: "interview", label: "Interview" },
   { value: "offer", label: "Offer" },
   { value: "rejected", label: "Rejected" },
+  { value: "withdrawn", label: "Withdrawn" },
 ];
 
 const inputStyle: React.CSSProperties = {
@@ -50,10 +66,10 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
   const [role, setRole] = useState("");
   const [status, setStatus] = useState<ApplicationStatus>("applied");
   const [appliedAt, setAppliedAt] = useState(
-    new Date().toISOString().split("T")[0],
+    editingApp?.applied_at ?? new Date().toISOString().split("T")[0],
   );
-  const [jdUrl, setJdUrl] = useState("");
-  const [notes, setNotes] = useState("");
+  const [jdUrl, setJdUrl] = useState(editingApp?.jd_url ?? "");
+  const [notes, setNotes] = useState(editingApp?.notes ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,15 +81,22 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
     }
     setLoading(true);
     setError(null);
+
+    const payload = {
+      company: company.trim(),
+      role: role.trim(),
+      status,
+      applied_at: appliedAt,
+      jd_url: jdUrl.trim() || null,
+      notes: notes.trim() || null,
+    };
+
     try {
-      await onAdd({
-        company: company.trim(),
-        role: role.trim(),
-        status,
-        applied_at: appliedAt,
-        jd_url: jdUrl.trim() || null,
-        notes: notes.trim() || null,
-      });
+      if (isEditing && onEdit) {
+        await onEdit(editingApp.id, payload);
+      } else {
+        await onAdd(payload);
+      }
       onClose();
     } catch {
       setError("Failed to save. Please try again.");
@@ -240,7 +263,11 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
                 opacity: loading ? 0.5 : 1,
               }}
             >
-              {loading ? "Saving..." : "Add application"}
+              {loading
+                ? "Saving..."
+                : isEditing
+                  ? "Save changes"
+                  : "Add application"}
             </button>
           </div>
         </form>

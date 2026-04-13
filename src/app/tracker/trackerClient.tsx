@@ -326,6 +326,16 @@ export default function TrackerClient({
     setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2500);
   }
 
+  // Celebration state
+  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
+  const [confetti, setConfetti] = useState<{ active: boolean; intensity: "normal" | "big" }>({ active: false, intensity: "normal" });
+  const [offerCard, setOfferCard] = useState<{ company: string; role: string } | null>(null);
+
+  function showToast(message: string) {
+    setToast({ message, visible: true });
+    setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2500);
+  }
+
   const byStatus = (status: ApplicationStatus) =>
     applications.filter((a) => a.status === status);
 

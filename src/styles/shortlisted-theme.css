@@ -1,0 +1,175 @@
+/*
+ * Shortlisted Theme — v2
+ * Deep space dark with electric violet accent
+ *
+ * Usage: import this file at your app's root.
+ * All components should reference var(--sl-*) tokens, never hardcoded hex.
+ */
+
+:root {
+  /* ── Base surfaces ── */
+  --sl-base: #0B0D12;
+  --sl-surface: #12141B;
+  --sl-card: #181A23;
+  --sl-card-hover: #1E2029;
+
+  /* ── Accent ── */
+  --sl-accent: #7C6AFF;
+  --sl-accent-light: #A78BFA;
+  --sl-accent-glow: rgba(124, 106, 255, 0.15);
+
+  /* ── Semantic ── */
+  --sl-success: #34D399;
+  --sl-success-bg: rgba(52, 211, 153, 0.1);
+  --sl-warning: #FBBF24;
+  --sl-warning-bg: rgba(251, 191, 36, 0.1);
+  --sl-danger: #F87171;
+  --sl-danger-bg: rgba(248, 113, 113, 0.1);
+
+  /* ── Text ── */
+  --sl-text: #EDEAE3;
+  --sl-text-muted: #9B978E;
+  --sl-text-dim: #5E5B55;
+
+  /* ── Borders ── */
+  --sl-border: rgba(255, 255, 255, 0.06);
+  --sl-border-light: rgba(255, 255, 255, 0.1);
+
+  /* ── Gradients ── */
+  --sl-gradient-accent: linear-gradient(135deg, var(--sl-accent), var(--sl-accent-light));
+  --sl-gradient-success: linear-gradient(135deg, var(--sl-success), #2DD4A8);
+
+  /* ── Radius ── */
+  --sl-radius-xs: 4px;
+  --sl-radius-sm: 6px;
+  --sl-radius-md: 8px;
+  --sl-radius-lg: 10px;
+  --sl-radius-xl: 12px;
+  --sl-radius-2xl: 16px;
+  --sl-radius-3xl: 20px;
+
+  /* ── Shadows ── */
+  --sl-shadow-glow: 0 0 12px var(--sl-accent-glow);
+  --sl-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --sl-shadow-celebration: 0 0 80px rgba(52, 211, 153, 0.14), 0 24px 64px rgba(0, 0, 0, 0.6);
+
+  /* ── Transitions ── */
+  --sl-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --sl-transition-fast: all 0.15s;
+  --sl-transition-normal: all 0.2s;
+  --sl-transition-slow: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Stage colors ── */
+  --sl-stage-applied: var(--sl-accent);
+  --sl-stage-screening: var(--sl-accent-light);
+  --sl-stage-interview: var(--sl-warning);
+  --sl-stage-offer: var(--sl-success);
+  --sl-stage-rejected: var(--sl-danger);
+}
+
+
+/* ── Keyframes ── */
+
+@keyframes sl-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sl-scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* ── Scrollbar ── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sl-border);
+  border-radius: 3px;
+}
+
+
+/* ── Utility classes ── */
+
+.sl-surface {
+  background: var(--sl-surface);
+}
+
+.sl-card {
+  background: var(--sl-card);
+}
+
+.sl-text {
+  color: var(--sl-text);
+}
+
+.sl-text-muted {
+  color: var(--sl-text-muted);
+}
+
+.sl-text-dim {
+  color: var(--sl-text-dim);
+}
+
+.sl-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sl-text-dim);
+}
+
+.sl-fade-in {
+  animation: sl-fadeIn 0.5s ease;
+}
+
+.sl-scale-in {
+  animation: sl-scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Match score color utilities */
+.sl-match-high {
+  color: var(--sl-success);
+}
+
+.sl-match-mid {
+  color: var(--sl-warning);
+}
+
+.sl-match-low {
+  color: var(--sl-danger);
+}
+
+.sl-border-match-high {
+  border-color: var(--sl-success);
+}
+
+.sl-border-match-mid {
+  border-color: var(--sl-warning);
+}
+
+.sl-border-match-low {
+  border-color: var(--sl-danger);
+}

@@ -5,6 +5,21 @@ import Link from "next/link";
 
 export const metadata = { title: "Account — Shortlisted" };
 
+const rowStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: "16px 24px",
+  borderBottom: "1px solid var(--sl-border)",
+};
+
+const cardStyle: React.CSSProperties = {
+  border: "1px solid var(--sl-border)",
+  borderRadius: "var(--sl-radius-2xl)",
+  overflow: "hidden",
+  marginBottom: 16,
+};
+
 export default async function AccountPage() {
   const supabase = await createSupabaseServerClient();
   const {
@@ -26,21 +41,20 @@ export default async function AccountPage() {
 
   const expiryDate = profile?.plan_expires_at
     ? new Date(profile.plan_expires_at).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
     : null;
 
   const joinedDate = user.created_at
     ? new Date(user.created_at).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
     : null;
 
-  // Derive display name from email — "abhishek@gmail.com" → "Abhishek"
   const displayName =
     user.email
       ?.split("@")[0]
@@ -48,90 +62,90 @@ export default async function AccountPage() {
       .replace(/\b\w/g, (c) => c.toUpperCase()) ?? "User";
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
       <Navbar userEmail={user.email} />
 
-      <main className="max-w-2xl mx-auto px-6 py-12">
+      <main style={{ maxWidth: 640, margin: "0 auto", padding: "48px 24px" }}>
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-xl font-semibold text-gray-900">Account</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Your profile and plan details.
-          </p>
+        <div style={{ marginBottom: 40 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>Account</h1>
+          <p style={{ marginTop: 4, fontSize: 13, color: "var(--sl-text-muted)" }}>Your profile and plan details.</p>
         </div>
 
         {/* Profile card */}
-        <div className="border border-gray-100 rounded-2xl divide-y divide-gray-100 mb-6">
+        <div style={cardStyle}>
           {/* Avatar + name */}
-          <div className="flex items-center gap-4 px-6 py-5">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-              <span className="text-blue-700 font-semibold text-base">
+          <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "20px 24px", borderBottom: "1px solid var(--sl-border)" }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--sl-accent-glow)", border: "1px solid rgba(124,106,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <span style={{ color: "var(--sl-accent)", fontWeight: 600, fontSize: 15 }}>
                 {displayName.charAt(0).toUpperCase()}
               </span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">
-                {displayName}
-              </p>
-              <p className="text-xs text-gray-400 mt-0.5">{user.email}</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>{displayName}</p>
+              <p style={{ fontSize: 12, color: "var(--sl-text-dim)", marginTop: 2 }}>{user.email}</p>
             </div>
           </div>
 
-          {/* Joined date */}
-          <div className="flex items-center justify-between px-6 py-4">
-            <span className="text-xs font-medium text-gray-500">
-              Member since
-            </span>
-            <span className="text-xs text-gray-700">{joinedDate ?? "—"}</span>
+          {/* Member since */}
+          <div style={{ ...rowStyle }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Member since</span>
+            <span style={{ fontSize: 12, color: "var(--sl-text)" }}>{joinedDate ?? "—"}</span>
           </div>
 
           {/* Auth provider */}
-          <div className="flex items-center justify-between px-6 py-4">
-            <span className="text-xs font-medium text-gray-500">
-              Signed in with
-            </span>
-            <span className="text-xs text-gray-700">
-              {user.app_metadata?.provider === "google"
-                ? "Google"
-                : "Email & Password"}
+          <div style={{ ...rowStyle, borderBottom: "none" }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Signed in with</span>
+            <span style={{ fontSize: 12, color: "var(--sl-text)" }}>
+              {user.app_metadata?.provider === "google" ? "Google" : "Email & Password"}
             </span>
           </div>
         </div>
 
         {/* Plan card */}
-        <div className="border border-gray-100 rounded-2xl divide-y divide-gray-100 mb-6">
-          <div className="px-6 py-4 flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-500">
-              Current plan
-            </span>
+        <div style={cardStyle}>
+          <div style={{ ...rowStyle }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Current plan</span>
             <span
-              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isPack
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-600"
-                }`}
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                padding: "4px 10px",
+                borderRadius: 999,
+                ...(isPack
+                  ? { background: "var(--sl-success-bg)", color: "var(--sl-success)" }
+                  : { background: "var(--sl-card)", color: "var(--sl-text-muted)" }),
+              }}
             >
               {isPack ? "Placement Pack" : "Free"}
             </span>
           </div>
 
           {isPack && expiryDate && (
-            <div className="px-6 py-4 flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">
-                Access until
-              </span>
-              <span className="text-xs text-gray-700">{expiryDate}</span>
+            <div style={{ ...rowStyle }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Access until</span>
+              <span style={{ fontSize: 12, color: "var(--sl-text)" }}>{expiryDate}</span>
             </div>
           )}
 
           {!isPack && (
-            <div className="px-6 py-5">
-              <p className="text-xs text-gray-500 mb-3">
-                Upgrade to get the application tracker, follow-up reminders, and
-                analytics.
+            <div style={{ padding: "20px 24px", borderTop: "1px solid var(--sl-border)" }}>
+              <p style={{ fontSize: 12, color: "var(--sl-text-muted)", marginBottom: 12, lineHeight: 1.6 }}>
+                Upgrade to get the application tracker, follow-up reminders, and analytics.
               </p>
               <Link
                 href="/#pricing"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "8px 16px",
+                  background: "var(--sl-gradient-accent)",
+                  color: "#fff",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  borderRadius: "var(--sl-radius-lg)",
+                  textDecoration: "none",
+                }}
               >
                 Get Placement Pack →
               </Link>
@@ -140,61 +154,39 @@ export default async function AccountPage() {
         </div>
 
         {/* Actions */}
-        <div className="border border-gray-100 rounded-2xl divide-y divide-gray-100">
-          <Link
-            href="/analyze"
-            className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group"
-          >
-            <span className="text-xs font-medium text-gray-700">
-              Resume Analyzer
-            </span>
-            <span className="text-gray-300 group-hover:text-gray-500 text-sm">
-              →
-            </span>
-          </Link>
-
-          {isPack && (
-            <Link
-              href="/tracker"
-              className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group"
-            >
-              <span className="text-xs font-medium text-gray-700">
-                Application Tracker
-              </span>
-              <span className="text-gray-300 group-hover:text-gray-500 text-sm">
-                →
-              </span>
-            </Link>
-          )}
-
-          <Link
-            href="/privacy"
-            className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group"
-          >
-            <span className="text-xs font-medium text-gray-500">
-              Privacy Policy
-            </span>
-            <span className="text-gray-300 group-hover:text-gray-500 text-sm">
-              →
-            </span>
-          </Link>
-
-          <Link
-            href="/terms"
-            className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors group"
-          >
-            <span className="text-xs font-medium text-gray-500">
-              Terms of Service
-            </span>
-            <span className="text-gray-300 group-hover:text-gray-500 text-sm">
-              →
-            </span>
-          </Link>
+        <div style={cardStyle}>
+          {[
+            { href: "/analyze", label: "Resume Analyzer", show: true },
+            { href: "/tracker", label: "Application Tracker", show: isPack },
+            { href: "/privacy", label: "Privacy Policy", show: true, dim: true },
+            { href: "/terms", label: "Terms of Service", show: true, dim: true },
+          ]
+            .filter((item) => item.show)
+            .map((item, idx, arr) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "16px 24px",
+                  borderBottom: idx < arr.length - 1 ? "1px solid var(--sl-border)" : "none",
+                  textDecoration: "none",
+                  color: item.dim ? "var(--sl-text-muted)" : "var(--sl-text)",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  transition: "var(--sl-transition-fast)",
+                }}
+              >
+                {item.label}
+                <span style={{ color: "var(--sl-text-dim)" }}>→</span>
+              </Link>
+            ))}
         </div>
 
-        {/* Version note */}
-        <p className="mt-8 text-center text-xs text-gray-300">
-          Shortlisted - Built to get you shortlisted
+        <p style={{ marginTop: 32, textAlign: "center", fontSize: 11, color: "var(--sl-text-dim)" }}>
+          Shortlisted — Built to get you shortlisted
         </p>
       </main>
     </div>

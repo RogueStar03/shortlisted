@@ -9,7 +9,7 @@ export default async function AnalyzePage() {
   if (!user) redirect("/auth?next=/analyze");
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
       <Navbar userEmail={user.email} />
       <AnalyzeClient />
     </div>

@@ -87,9 +87,9 @@ export default function LandingPage() {
       {/* Nav — full width with inner constraint */}
       <nav className="border-b border-gray-100 bg-white sticky top-0 z-50">
         <div className="w-full px-6 lg:px-12 h-14 flex items-center justify-between">
-          <span className="text-lg font-bold tracking-tight">
+          <Link href="/" className="text-lg font-bold tracking-tight no-underline text-gray-900 hover:opacity-80 transition-opacity">
             Short<span className="text-blue-600">listed</span>
-          </span>
+          </Link>
           <div className="flex items-center gap-5">
             <a
               href="#pricing"

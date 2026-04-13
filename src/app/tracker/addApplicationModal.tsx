@@ -61,10 +61,11 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 6,
 };
 
-export default function AddApplicationModal({ onClose, onAdd }: Props) {
-  const [company, setCompany] = useState("");
-  const [role, setRole] = useState("");
-  const [status, setStatus] = useState<ApplicationStatus>("applied");
+export default function AddApplicationModal({ onClose, onAdd, onEdit, editingApp }: Props) {
+  const isEditing = Boolean(editingApp);
+  const [company, setCompany] = useState(editingApp?.company ?? "");
+  const [role, setRole] = useState(editingApp?.role ?? "");
+  const [status, setStatus] = useState<ApplicationStatus>(editingApp?.status ?? "applied");
   const [appliedAt, setAppliedAt] = useState(
     editingApp?.applied_at ?? new Date().toISOString().split("T")[0],
   );
@@ -92,7 +93,7 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
     };
 
     try {
-      if (isEditing && onEdit) {
+      if (editingApp && onEdit) {
         await onEdit(editingApp.id, payload);
       } else {
         await onAdd(payload);
@@ -133,7 +134,7 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-          <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>Add application</h2>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>{isEditing ? "Edit application" : "Add application"}</h2>
           <button
             onClick={onClose}
             style={{ color: "var(--sl-text-dim)", background: "none", border: "none", cursor: "pointer", fontSize: 18, lineHeight: 1 }}

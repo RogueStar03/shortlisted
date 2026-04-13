@@ -23,11 +23,12 @@ export interface Application {
   updated_at: string;
 }
 
-export async function getApplications(): Promise<Application[]> {
+export async function getApplications(userId: string): Promise<Application[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("applications")
     .select("*")
+    .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

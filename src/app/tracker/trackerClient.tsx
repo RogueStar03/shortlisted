@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -89,15 +89,61 @@ function PaywallOverlay() {
   );
 }
 
+// ── Confirm Dialog ───────────────────────────────────────────────────────────
+function ConfirmDialog({
+  title,
+  message,
+  confirmLabel,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-sm p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 mb-5">{message}</p>
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Application Card ──────────────────────────────────────────────────────────
 function AppCard({
   app,
   index,
   onDelete,
+  onEdit,
 }: {
   app: Application;
   index: number;
   onDelete: (id: string) => void;
+  onEdit: (app: Application) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const daysAgo = Math.floor(
@@ -200,10 +246,12 @@ function Column({
   col,
   apps,
   onDelete,
+  onEdit,
 }: {
   col: (typeof COLUMNS)[0];
   apps: Application[];
   onDelete: (id: string) => void;
+  onEdit: (app: Application) => void;
 }) {
   return (
     <div
@@ -264,7 +312,9 @@ export default function TrackerClient({
 }) {
   const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [showModal, setShowModal] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [editingApp, setEditingApp] = useState<Application | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Application | null>(null);
+
 
   // Celebration state
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
@@ -350,7 +400,9 @@ export default function TrackerClient({
   async function handleDelete(id: string) {
     setApplications((prev) => prev.filter((a) => a.id !== id));
     try {
-      const res = await fetch(`/api/applications/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/applications/${removed.id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Failed to delete");
     } catch {
       window.location.reload();

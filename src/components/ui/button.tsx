@@ -14,14 +14,29 @@ interface ButtonProps {
   type?: "button" | "submit";
 }
 
-const VARIANTS: Record<Variant, string> = {
-  primary: "bg-blue-600 hover:bg-blue-700 text-white border-transparent",
-  secondary:
-    "bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300",
-  ghost: "bg-transparent hover:bg-gray-100 text-gray-600 border-transparent",
+const VARIANT_STYLES: Record<Variant, React.CSSProperties> = {
+  primary: {
+    background: "var(--sl-gradient-accent)",
+    color: "#fff",
+    border: "none",
+    borderRadius: "var(--sl-radius-lg)",
+  },
+  secondary: {
+    background: "transparent",
+    color: "var(--sl-text-muted)",
+    border: "1px solid var(--sl-border)",
+    borderRadius: "var(--sl-radius-lg)",
+  },
+  ghost: {
+    background: "transparent",
+    color: "var(--sl-accent)",
+    border: "none",
+    borderRadius: "var(--sl-radius-md)",
+    fontSize: 11,
+  },
 };
 
-const SIZES: Record<Size, string> = {
+const SIZE_CLASSES: Record<Size, string> = {
   sm: "px-3 py-1.5 text-xs",
   md: "px-5 py-2.5 text-sm",
 };
@@ -36,18 +51,24 @@ export default function Button({
   className = "",
   type = "button",
 }: ButtonProps) {
-  const base = `inline-flex items-center justify-center font-medium rounded-lg border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${VARIANTS[variant]} ${SIZES[size]} ${className}`;
+  const baseClass = `inline-flex items-center justify-center font-medium transition-opacity disabled:opacity-40 disabled:cursor-not-allowed ${SIZE_CLASSES[size]} ${className}`;
 
   if (href && !disabled) {
     return (
-      <Link href={href} className={base} onClick={onClick}>
+      <Link href={href} className={baseClass} style={VARIANT_STYLES[variant]} onClick={onClick}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={base}>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={baseClass}
+      style={VARIANT_STYLES[variant]}
+    >
       {children}
     </button>
   );

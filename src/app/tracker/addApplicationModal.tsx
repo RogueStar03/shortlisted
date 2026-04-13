@@ -23,6 +23,28 @@ const STATUSES: { value: ApplicationStatus; label: string }[] = [
   { value: "rejected", label: "Rejected" },
 ];
 
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  background: "var(--sl-card)",
+  border: "1px solid var(--sl-border)",
+  borderRadius: "var(--sl-radius-lg)",
+  color: "var(--sl-text)",
+  padding: "8px 12px",
+  fontSize: 13,
+  outline: "none",
+  boxSizing: "border-box",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: 11,
+  fontWeight: 500,
+  color: "var(--sl-text-muted)",
+  textTransform: "uppercase",
+  letterSpacing: "0.5px",
+  marginBottom: 6,
+};
+
 export default function AddApplicationModal({ onClose, onAdd }: Props) {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
@@ -53,7 +75,7 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
         notes: notes.trim() || null,
       });
       onClose();
-    } catch (err) {
+    } catch {
       setError("Failed to save. Please try again.");
       setLoading(false);
     }
@@ -61,139 +83,162 @@ export default function AddApplicationModal({ onClose, onAdd }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9997,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(4px)",
+        padding: "0 16px",
+      }}
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-md p-6"
+        style={{
+          background: "var(--sl-surface)",
+          border: "1px solid var(--sl-border-light)",
+          borderRadius: "var(--sl-radius-2xl)",
+          boxShadow: "var(--sl-shadow-modal)",
+          width: "100%",
+          maxWidth: 440,
+          padding: 24,
+          animation: "sl-scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-semibold text-gray-900">
-            Add application
-          </h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>Add application</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-lg leading-none"
+            style={{ color: "var(--sl-text-dim)", background: "none", border: "none", cursor: "pointer", fontSize: 18, lineHeight: 1 }}
           >
             ×
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Company <span className="text-red-400">*</span>
+              <label style={labelStyle}>
+                Company <span style={{ color: "var(--sl-danger)" }}>*</span>
               </label>
               <input
                 type="text"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="Acme Corp"
-                className="w-full px-3 py-2 border text-gray-900 border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={inputStyle}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Role <span className="text-red-400">*</span>
+              <label style={labelStyle}>
+                Role <span style={{ color: "var(--sl-danger)" }}>*</span>
               </label>
               <input
                 type="text"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 placeholder="Software Engineer"
-                className="w-full px-3 py-2 border text-gray-900 border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={inputStyle}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Status
-              </label>
+              <label style={labelStyle}>Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
-                className="w-full px-3 py-2 border text-gray-900 border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                style={{ ...inputStyle, background: "var(--sl-card)" }}
               >
                 {STATUSES.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
+                  <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Applied on
-              </label>
+              <label style={labelStyle}>Applied on</label>
               <input
                 type="date"
                 value={appliedAt}
                 max={new Date().toISOString().split("T")[0]}
                 onChange={(e) => setAppliedAt(e.target.value)}
-                className="w-full px-3 py-2 border text-gray-900 border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                style={{ ...inputStyle, background: "var(--sl-card)" }}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Job posting URL
-            </label>
+            <label style={labelStyle}>Job posting URL</label>
             <input
               type="text"
               value={jdUrl}
               onChange={(e) => {
                 const val = e.target.value;
-                if (
-                  val &&
-                  !val.startsWith("http://") &&
-                  !val.startsWith("https://")
-                ) {
+                if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
                   setJdUrl("https://" + val);
                 } else {
                   setJdUrl(val);
                 }
               }}
               placeholder="https://..."
-              className="w-full text-gray-900 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Notes
-            </label>
+            <label style={labelStyle}>Notes</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Recruiter name, interview date, anything relevant..."
               rows={3}
-              className="w-full px-3 py-2 border text-gray-900 border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              style={{ ...inputStyle, resize: "vertical" }}
             />
           </div>
 
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+            <p style={{ fontSize: 11, color: "var(--sl-danger)", background: "var(--sl-danger-bg)", padding: "8px 12px", borderRadius: "var(--sl-radius-lg)" }}>
               {error}
             </p>
           )}
 
-          <div className="flex gap-2 pt-1">
+          <div style={{ display: "flex", gap: 8, paddingTop: 4 }}>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              style={{
+                flex: 1,
+                padding: "10px 0",
+                border: "1px solid var(--sl-border)",
+                borderRadius: "var(--sl-radius-lg)",
+                fontSize: 13,
+                color: "var(--sl-text-muted)",
+                background: "transparent",
+                cursor: "pointer",
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+              style={{
+                flex: 1,
+                padding: "10px 0",
+                background: "var(--sl-gradient-accent)",
+                color: "#fff",
+                fontSize: 13,
+                fontWeight: 500,
+                borderRadius: "var(--sl-radius-lg)",
+                border: "none",
+                cursor: "pointer",
+                opacity: loading ? 0.5 : 1,
+              }}
             >
               {loading ? "Saving..." : "Add application"}
             </button>

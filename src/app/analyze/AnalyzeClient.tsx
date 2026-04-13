@@ -37,6 +37,21 @@ async function extractTextFromPDF(file: File): Promise<string> {
 
 type InputMode = "text" | "pdf";
 
+const inputStyle: React.CSSProperties = {
+  background: "var(--sl-surface)",
+  border: "1px solid var(--sl-border)",
+  borderRadius: "var(--sl-radius-xl)",
+  color: "var(--sl-text)",
+  padding: "14px",
+  fontSize: 12,
+  lineHeight: 1.6,
+  outline: "none",
+  resize: "vertical" as const,
+  width: "100%",
+  boxSizing: "border-box" as const,
+  fontFamily: "var(--font-mono, monospace)",
+};
+
 export default function AnalyzeClient() {
   const [resumeMode, setResumeMode] = useState<InputMode>("pdf");
   const [resume, setResume] = useState("");
@@ -125,124 +140,108 @@ export default function AnalyzeClient() {
   const jdWords = jd.trim() ? jd.trim().split(/\s+/).length : 0;
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-10">
+    <main style={{ padding: "40px 24px", background: "var(--sl-base)" }}>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold text-gray-900">Resume Analyzer</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Paste your resume and the job description. We'll show you exactly
-          what's missing.
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 20, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>
+          Resume Analyzer
+        </h1>
+        <p style={{ marginTop: 4, fontSize: 13, color: "var(--sl-text-muted)" }}>
+          Paste your resume and the job description. We'll show you exactly what's missing.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         {/* Resume panel */}
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-medium text-gray-700">
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <label style={{ fontSize: 11, fontWeight: 500, color: "var(--sl-text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Your Resume
             </label>
-            <div className="flex items-center gap-3">
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {resumeMode === "text" && (
-                <span className="text-xs text-gray-400">
+                <span style={{ fontSize: 11, color: "var(--sl-text-dim)" }}>
                   {resumeWords} words
                 </span>
               )}
               {/* Mode toggle */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
-                <button
-                  onClick={() => {
-                    setResumeMode("pdf");
-                    setExtractWarning(null);
-                  }}
-                  className={`text-xs px-2.5 py-1 rounded-md transition-colors ${
-                    resumeMode === "pdf"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  PDF
-                </button>
-                <button
-                  onClick={() => {
-                    setResumeMode("text");
-                    setPdfFile(null);
-                    setExtractWarning(null);
-                  }}
-                  className={`text-xs px-2.5 py-1 rounded-md transition-colors ${
-                    resumeMode === "text"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Text
-                </button>
+              <div style={{ display: "flex", alignItems: "center", gap: 2, background: "var(--sl-surface)", borderRadius: "var(--sl-radius-lg)", padding: 2 }}>
+                {(["pdf", "text"] as InputMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => {
+                      setResumeMode(mode);
+                      setExtractWarning(null);
+                      if (mode === "text") setPdfFile(null);
+                    }}
+                    style={{
+                      fontSize: 11,
+                      padding: "4px 10px",
+                      borderRadius: "var(--sl-radius-md)",
+                      border: "none",
+                      cursor: "pointer",
+                      transition: "var(--sl-transition-fast)",
+                      ...(resumeMode === mode
+                        ? { background: "var(--sl-card)", color: "var(--sl-text)" }
+                        : { background: "transparent", color: "var(--sl-text-dim)" }),
+                    }}
+                  >
+                    {mode.toUpperCase()}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
+
           {/* Extraction warning */}
           {extractWarning && (
-            <p className="mb-2 text-xs text-amber-700 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100">
+            <p style={{ marginBottom: 8, fontSize: 11, color: "var(--sl-warning)", background: "var(--sl-warning-bg)", padding: "8px 12px", borderRadius: "var(--sl-radius-lg)", border: "1px solid var(--sl-warning)" }}>
               ⚠ {extractWarning}
             </p>
           )}
+
           {resumeMode === "text" ? (
             <textarea
               value={resume}
               onChange={(e) => setResume(e.target.value)}
               placeholder="Paste your resume text here — plain text works best. If you have a PDF, switch to PDF mode above."
-              className="flex-1 min-h-[420px] px-3.5 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono leading-relaxed"
+              style={{ ...inputStyle, minHeight: 420 }}
             />
           ) : (
-            <div className="flex-1 min-h-[420px] flex flex-col">
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 420 }}>
               {/* PDF drop zone */}
               <div
                 onClick={() => !extracting && fileInputRef.current?.click()}
-                className={`flex-1 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors ${
-                  extracting
-                    ? "border-blue-200 bg-blue-50 cursor-wait"
-                    : pdfFile
-                      ? "border-green-200 bg-green-50 hover:bg-green-100"
-                      : "border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-blue-50"
-                }`}
+                style={{
+                  flex: 1,
+                  border: `2px dashed ${extracting ? "var(--sl-accent)" : pdfFile ? "var(--sl-success)" : "var(--sl-border)"}`,
+                  borderRadius: "var(--sl-radius-xl)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 12,
+                  cursor: extracting ? "wait" : "pointer",
+                  background: extracting ? "var(--sl-accent-glow)" : pdfFile ? "var(--sl-success-bg)" : "var(--sl-surface)",
+                  transition: "var(--sl-transition-normal)",
+                }}
               >
                 {extracting ? (
                   <>
-                    <svg
-                      className="animate-spin h-6 w-6 text-blue-500"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v8H4z"
-                      />
+                    <svg className="animate-spin h-6 w-6" style={{ color: "var(--sl-accent)" }} viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
-                    <p className="text-sm text-blue-600 font-medium">
-                      Extracting text...
-                    </p>
+                    <p style={{ fontSize: 13, color: "var(--sl-accent)", fontWeight: 500 }}>Extracting text...</p>
                   </>
                 ) : pdfFile && resume ? (
                   <>
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <span className="text-green-600 text-lg">✓</span>
+                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--sl-success-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ color: "var(--sl-success)", fontSize: 18 }}>✓</span>
                     </div>
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-green-700">
-                        {pdfFile.name}
-                      </p>
-                      <p className="text-xs text-green-600 mt-0.5">
-                        {resumeWords} words extracted
-                      </p>
+                    <div style={{ textAlign: "center" }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "var(--sl-success)" }}>{pdfFile.name}</p>
+                      <p style={{ fontSize: 11, color: "var(--sl-text-muted)", marginTop: 2 }}>{resumeWords} words extracted</p>
                     </div>
                     <button
                       onClick={(e) => {
@@ -250,38 +249,23 @@ export default function AnalyzeClient() {
                         setPdfFile(null);
                         setResume("");
                         setExtractWarning(null);
-                        if (fileInputRef.current)
-                          fileInputRef.current.value = "";
+                        if (fileInputRef.current) fileInputRef.current.value = "";
                       }}
-                      className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                      style={{ fontSize: 11, color: "var(--sl-text-dim)", background: "none", border: "none", cursor: "pointer" }}
                     >
                       Remove
                     </button>
                   </>
                 ) : (
                   <>
-                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-gray-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
+                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--sl-card)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg style={{ width: 20, height: 20, color: "var(--sl-text-dim)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-gray-600">
-                        Click to upload PDF
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        Max 5MB · Text-based PDFs only
-                      </p>
+                    <div style={{ textAlign: "center" }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: "var(--sl-text-muted)" }}>Click to upload PDF</p>
+                      <p style={{ fontSize: 11, color: "var(--sl-text-dim)", marginTop: 2 }}>Max 5MB · Text-based PDFs only</p>
                     </div>
                   </>
                 )}
@@ -291,26 +275,23 @@ export default function AnalyzeClient() {
                 type="file"
                 accept=".pdf,application/pdf"
                 onChange={handlePDFUpload}
-                className="hidden"
+                style={{ display: "none" }}
               />
 
-              {/* Show extracted text preview after PDF upload */}
+              {/* Extracted text preview */}
               {pdfFile && resume && (
-                <div className="mt-3">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-xs text-gray-500">
-                      Extracted text preview
-                    </p>
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                    <p style={{ fontSize: 11, color: "var(--sl-text-muted)" }}>Extracted text preview</p>
                     <button
                       onClick={() => setResumeMode("text")}
-                      className="text-xs text-blue-600 hover:underline"
+                      style={{ fontSize: 11, color: "var(--sl-accent)", background: "none", border: "none", cursor: "pointer" }}
                     >
                       Edit manually
                     </button>
                   </div>
-                  <div className="max-h-32 overflow-y-auto bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-xs text-gray-600 font-mono leading-relaxed">
-                    {resume.slice(0, 400)}
-                    {resume.length > 400 ? "..." : ""}
+                  <div style={{ maxHeight: 128, overflowY: "auto", background: "var(--sl-surface)", border: "1px solid var(--sl-border)", borderRadius: "var(--sl-radius-lg)", padding: "8px 12px", fontSize: 11, color: "var(--sl-text-muted)", fontFamily: "var(--font-mono, monospace)", lineHeight: 1.6 }}>
+                    {resume.slice(0, 400)}{resume.length > 400 ? "..." : ""}
                   </div>
                 </div>
               )}
@@ -318,63 +299,61 @@ export default function AnalyzeClient() {
           )}
         </div>
 
-        {/* JD panel — unchanged */}
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-medium text-gray-700">
+        {/* JD panel */}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <label style={{ fontSize: 11, fontWeight: 500, color: "var(--sl-text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Job Description
             </label>
-            <span className="text-xs text-gray-400">{jdWords} words</span>
+            <span style={{ fontSize: 11, color: "var(--sl-text-dim)" }}>{jdWords} words</span>
           </div>
           <textarea
             value={jd}
             onChange={(e) => setJd(e.target.value)}
             placeholder="Paste the full job description here — include the requirements, responsibilities, and preferred skills sections."
-            className="flex-1 min-h-[420px] px-3.5 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono leading-relaxed"
+            style={{ ...inputStyle, minHeight: 420 }}
           />
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <p className="mt-4 text-xs text-red-600 bg-red-50 px-4 py-2.5 rounded-lg border border-red-100">
+        <p style={{ marginTop: 16, fontSize: 11, color: "var(--sl-danger)", background: "var(--sl-danger-bg)", padding: "10px 16px", borderRadius: "var(--sl-radius-lg)", border: "1px solid var(--sl-danger)" }}>
           {error}
         </p>
       )}
 
       {/* CTA */}
-      <div className="mt-5 flex items-center justify-between">
-        <p className="text-xs text-gray-400">
+      <div style={{ marginTop: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <p style={{ fontSize: 11, color: "var(--sl-text-dim)" }}>
           Analysis runs locally — your resume never leaves your device.
         </p>
         <button
           onClick={handleAnalyze}
           disabled={loading || !resume.trim() || !jd.trim()}
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+          style={{
+            background: "var(--sl-gradient-accent)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "var(--sl-radius-lg)",
+            padding: "10px 24px",
+            fontSize: 13,
+            fontWeight: 500,
+            cursor: "pointer",
+            opacity: loading || !resume.trim() || !jd.trim() ? 0.4 : 1,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
         >
           {loading ? (
-            <span className="flex items-center gap-2">
-              <svg
-                className="animate-spin h-3.5 w-3.5"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                />
+            <>
+              <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
               Analyzing...
-            </span>
+            </>
           ) : (
             "Analyze Resume →"
           )}

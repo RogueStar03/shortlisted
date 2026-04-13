@@ -1,15 +1,21 @@
 "use client";
 
-import { SCORE_BANDS } from "@/lib/constants/colors";
+import { getMatchColor } from "@/lib/utils/matchColor";
 
-type Band = keyof typeof SCORE_BANDS;
+type Band = "strong" | "moderate" | "poor";
+
+const BAND_LABELS: Record<Band, string> = {
+  strong: "Strong Match",
+  moderate: "Moderate Match",
+  poor: "Weak Match",
+};
 
 const gradientMap: Record<Band, string> = {
   strong:
-    "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.06), rgba(5,150,105,0.12))",
+    "linear-gradient(to right, var(--sl-danger-bg), var(--sl-warning-bg), var(--sl-success-bg))",
   moderate:
-    "linear-gradient(to right, rgba(220,38,38,0.06), rgba(217,119,6,0.10))",
-  poor: "linear-gradient(to right, rgba(220,38,38,0.10), rgba(220,38,38,0.04))",
+    "linear-gradient(to right, var(--sl-danger-bg), var(--sl-warning-bg))",
+  poor: "linear-gradient(to right, var(--sl-danger-bg), rgba(248,113,113,0.04))",
 };
 
 export default function ScoreBar({
@@ -23,7 +29,8 @@ export default function ScoreBar({
   verdict?: string;
   compact?: boolean;
 }) {
-  const { color, label } = SCORE_BANDS[band];
+  const color = getMatchColor(score);
+  const label = BAND_LABELS[band];
 
   return (
     <div
@@ -63,7 +70,9 @@ export default function ScoreBar({
           {label}
         </p>
         {verdict && (
-          <p className="mt-2 text-sm text-gray-500 max-w-md">{verdict}</p>
+          <p className="mt-2 text-sm max-w-md" style={{ color: "var(--sl-text-muted)" }}>
+            {verdict}
+          </p>
         )}
       </div>
     </div>

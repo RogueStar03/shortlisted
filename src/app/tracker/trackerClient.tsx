@@ -13,77 +13,42 @@ import type {
 } from "@/lib/supabase/applications";
 import AddApplicationModal from "./addApplicationModal";
 import Link from "next/link";
+import ScoreRing from "@/components/ui/ScoreRing";
+import Toast from "@/components/tracker/Toast";
+import Confetti from "@/components/tracker/Confetti";
+import OfferCelebration from "@/components/tracker/OfferCelebration";
+import { getMatchColor } from "@/lib/utils/matchColor";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const COLUMNS: {
   id: ApplicationStatus;
   label: string;
-  color: string;
-  dot: string;
+  stageVar: string;
 }[] = [
-  {
-    id: "applied",
-    label: "Applied",
-    color: "bg-blue-50 border-blue-100",
-    dot: "bg-blue-400",
-  },
-  {
-    id: "screening",
-    label: "Screening",
-    color: "bg-purple-50 border-purple-100",
-    dot: "bg-purple-400",
-  },
-  {
-    id: "interview",
-    label: "Interview",
-    color: "bg-amber-50 border-amber-100",
-    dot: "bg-amber-400",
-  },
-  {
-    id: "offer",
-    label: "Offer",
-    color: "bg-green-50 border-green-100",
-    dot: "bg-green-400",
-  },
-  {
-    id: "rejected",
-    label: "Rejected",
-    color: "bg-gray-50 border-gray-100",
-    dot: "bg-gray-300",
-  },
+  { id: "applied", label: "Applied", stageVar: "var(--sl-stage-applied)" },
+  { id: "screening", label: "Screening", stageVar: "var(--sl-stage-screening)" },
+  { id: "interview", label: "Interview", stageVar: "var(--sl-stage-interview)" },
+  { id: "offer", label: "Offer", stageVar: "var(--sl-stage-offer)" },
+  { id: "rejected", label: "Rejected", stageVar: "var(--sl-stage-rejected)" },
 ];
-
-const STATUS_COLORS: Record<ApplicationStatus, string> = {
-  applied: "text-blue-600 bg-blue-50 border-blue-100",
-  screening: "text-purple-600 bg-purple-50 border-purple-100",
-  interview: "text-amber-600 bg-amber-50 border-amber-100",
-  offer: "text-green-600 bg-green-50 border-green-100",
-  rejected: "text-gray-500 bg-gray-50 border-gray-100",
-  withdrawn: "text-gray-400 bg-gray-50 border-gray-100",
-};
 
 // ── Paywall ───────────────────────────────────────────────────────────────────
 function PaywallOverlay() {
   return (
-    <div className="relative min-h-[600px]">
+    <div style={{ position: "relative", minHeight: 600, background: "var(--sl-base)" }}>
       {/* Blurred fake board */}
-      <div className="filter blur-sm pointer-events-none select-none">
-        <div className="grid grid-cols-5 gap-4 px-4 py-6">
+      <div style={{ filter: "blur(4px)", pointerEvents: "none", userSelect: "none" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, padding: "24px 16px" }}>
           {COLUMNS.map((col) => (
-            <div key={col.id} className={`rounded-xl border p-3 ${col.color}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`w-1.5 h-1.5 rounded-full ${col.dot}`} />
-                <span className="text-xs font-medium text-gray-600">
-                  {col.label}
-                </span>
+            <div key={col.id} style={{ background: "var(--sl-surface)", borderRadius: "var(--sl-radius-xl)", padding: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: col.stageVar }} />
+                <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>{col.label}</span>
               </div>
               {[1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-lg border border-gray-100 p-3 mb-2"
-                >
-                  <div className="h-3 bg-gray-100 rounded w-3/4 mb-2" />
-                  <div className="h-2 bg-gray-50 rounded w-1/2" />
+                <div key={i} style={{ background: "var(--sl-card)", borderRadius: "var(--sl-radius-xl)", padding: 12, marginBottom: 8 }}>
+                  <div style={{ height: 10, background: "var(--sl-card-hover)", borderRadius: 4, width: "75%", marginBottom: 6 }} />
+                  <div style={{ height: 8, background: "var(--sl-surface)", borderRadius: 4, width: "50%" }} />
                 </div>
               ))}
             </div>
@@ -92,38 +57,30 @@ function PaywallOverlay() {
       </div>
 
       {/* Overlay */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-xl p-8 max-w-sm mx-4 text-center">
-          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-            <span className="text-blue-600 text-lg">▦</span>
+      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ background: "var(--sl-surface)", border: "1px solid var(--sl-border-light)", borderRadius: "var(--sl-radius-2xl)", boxShadow: "var(--sl-shadow-modal)", padding: 32, maxWidth: 360, width: "100%", textAlign: "center" }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--sl-accent-glow)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+            <span style={{ color: "var(--sl-accent)", fontSize: 18 }}>▦</span>
           </div>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">
-            Application Tracker
-          </h2>
-          <p className="text-sm text-gray-500 mb-5 leading-relaxed">
-            Track every application, move cards as you progress, and never lose
-            track of where you stand.
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: "var(--sl-text)", marginBottom: 8 }}>Application Tracker</h2>
+          <p style={{ fontSize: 13, color: "var(--sl-text-muted)", marginBottom: 20, lineHeight: 1.6 }}>
+            Track every application, move cards as you progress, and never lose track of where you stand.
           </p>
-          <div className="space-y-2 text-xs text-gray-500 mb-6 text-left">
-            {[
-              "Kanban pipeline — Applied to Offer",
-              "Notes and JD link per application",
-              "Follow-up reminders",
-              "Analytics dashboard",
-            ].map((f) => (
-              <div key={f} className="flex items-center gap-2">
-                <span className="text-green-500">✓</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, color: "var(--sl-text-muted)", marginBottom: 24, textAlign: "left" }}>
+            {["Kanban pipeline — Applied to Offer", "Notes and JD link per application", "Follow-up reminders", "Analytics dashboard"].map((f) => (
+              <div key={f} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ color: "var(--sl-success)" }}>✓</span>
                 {f}
               </div>
             ))}
           </div>
           <Link
             href="/#pricing"
-            className="block w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            style={{ display: "block", padding: "10px 0", background: "var(--sl-gradient-accent)", color: "#fff", fontSize: 13, fontWeight: 500, borderRadius: "var(--sl-radius-lg)", textDecoration: "none" }}
           >
             Get Placement Pack →
           </Link>
-          <p className="mt-3 text-xs text-gray-400">
+          <p style={{ marginTop: 12, fontSize: 11, color: "var(--sl-text-dim)" }}>
             One-time purchase · No auto-renewal · 7-day refund
           </p>
         </div>
@@ -142,9 +99,12 @@ function AppCard({
   index: number;
   onDelete: (id: string) => void;
 }) {
+  const [hovered, setHovered] = useState(false);
   const daysAgo = Math.floor(
     (Date.now() - new Date(app.applied_at).getTime()) / (1000 * 60 * 60 * 24),
   );
+  const matchScore = (app as Application & { match_score?: number }).match_score;
+  const matchColor = getMatchColor(matchScore ?? 0);
 
   return (
     <Draggable draggableId={app.id} index={index}>
@@ -153,37 +113,39 @@ function AppCard({
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white rounded-lg border border-gray-100 p-3 mb-2 cursor-grab active:cursor-grabbing transition-shadow ${
-            snapshot.isDragging
-              ? "shadow-lg border-blue-200 rotate-1"
-              : "hover:border-gray-200 hover:shadow-sm"
-          }`}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            background: hovered ? "var(--sl-card-hover)" : "var(--sl-card)",
+            borderRadius: "var(--sl-radius-xl)",
+            padding: "14px 16px",
+            marginBottom: 10,
+            borderLeft: `3px solid ${matchColor}`,
+            cursor: snapshot.isDragging ? "grabbing" : "grab",
+            transition: "var(--sl-transition-fast)",
+            boxShadow: snapshot.isDragging ? "0 8px 32px rgba(0,0,0,0.4)" : "none",
+            ...provided.draggableProps.style,
+          }}
         >
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-gray-900 truncate">
+          {/* Header row */}
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: "var(--sl-text)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {app.company}
               </p>
-              <p className="text-xs text-gray-500 truncate">{app.role}</p>
+              <p style={{ fontSize: 12, color: "var(--sl-text-muted)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {app.role}
+              </p>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (confirm(`Remove ${app.company}?`)) onDelete(app.id);
-              }}
-              className="text-gray-300 hover:text-red-400 transition-colors text-sm leading-none shrink-0"
-            >
-              ×
-            </button>
+            {matchScore != null && (
+              <ScoreRing score={matchScore} size={42} />
+            )}
           </div>
 
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-[10px] text-gray-400">
-              {daysAgo === 0
-                ? "Today"
-                : daysAgo === 1
-                  ? "Yesterday"
-                  : `${daysAgo}d ago`}
+          {/* Date + JD link */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+            <span style={{ fontSize: 11, color: "var(--sl-text-dim)" }}>
+              {daysAgo === 0 ? "Today" : daysAgo === 1 ? "Yesterday" : `${daysAgo}d ago`}
             </span>
             {app.jd_url && (
               <a
@@ -191,18 +153,42 @@ function AppCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[10px] text-blue-500 hover:underline"
+                style={{ fontSize: 11, color: "var(--sl-accent)", textDecoration: "none" }}
               >
                 JD →
               </a>
             )}
           </div>
 
+          {/* Notes */}
           {app.notes && (
-            <p className="mt-2 text-[10px] text-gray-400 line-clamp-2 leading-relaxed border-t border-gray-50 pt-2">
+            <p style={{ marginTop: 8, fontSize: 11, color: "var(--sl-text-muted)", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", background: "var(--sl-base)", borderLeft: "2px solid var(--sl-border)", padding: "4px 8px", borderRadius: "var(--sl-radius-xs)" }}>
               {app.notes}
             </p>
           )}
+
+          {/* Edit/delete actions */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, marginTop: 8 }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (confirm(`Remove ${app.company}?`)) onDelete(app.id);
+              }}
+              style={{
+                fontSize: 16,
+                color: "var(--sl-danger)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                opacity: hovered ? 1 : 0.2,
+                transition: "opacity 0.15s",
+                lineHeight: 1,
+                padding: "2px 4px",
+              }}
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
     </Draggable>
@@ -221,13 +207,19 @@ function Column({
 }) {
   return (
     <div
-      className={`rounded-xl border flex flex-col min-h-[400px] ${col.color}`}
+      style={{
+        background: "var(--sl-surface)",
+        borderRadius: "var(--sl-radius-xl)",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 400,
+      }}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-black/5">
-        <div className={`w-1.5 h-1.5 rounded-full ${col.dot}`} />
-        <span className="text-xs font-semibold text-gray-700">{col.label}</span>
-        <span className="ml-auto text-[10px] font-medium text-gray-400 bg-white px-1.5 py-0.5 rounded-full border border-gray-100">
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 12px 10px", borderBottom: "1px solid var(--sl-border)" }}>
+        <div style={{ width: 7, height: 7, borderRadius: "50%", background: col.stageVar, flexShrink: 0 }} />
+        <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)", flex: 1 }}>{col.label}</span>
+        <span style={{ fontSize: 10, fontWeight: 500, color: "var(--sl-text-dim)", background: "var(--sl-card)", padding: "2px 6px", borderRadius: 999, fontFamily: "var(--font-mono, monospace)" }}>
           {apps.length}
         </span>
       </div>
@@ -238,23 +230,22 @@ function Column({
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`flex-1 p-2 transition-colors rounded-b-xl ${
-              snapshot.isDraggingOver ? "bg-blue-50/50" : ""
-            }`}
+            style={{
+              flex: 1,
+              padding: 8,
+              borderRadius: "0 0 var(--sl-radius-xl) var(--sl-radius-xl)",
+              background: snapshot.isDraggingOver ? "var(--sl-accent-glow)" : "transparent",
+              transition: "var(--sl-transition-fast)",
+            }}
           >
             {apps.map((app, index) => (
-              <AppCard
-                key={app.id}
-                app={app}
-                index={index}
-                onDelete={onDelete}
-              />
+              <AppCard key={app.id} app={app} index={index} onDelete={onDelete} />
             ))}
             {provided.placeholder}
             {apps.length === 0 && !snapshot.isDraggingOver && (
-              <p className="text-[10px] text-gray-300 text-center mt-8">
-                Drop here
-              </p>
+              <div style={{ margin: 8, padding: "20px 12px", border: "1px dashed var(--sl-border)", borderRadius: "var(--sl-radius-lg)", textAlign: "center" }}>
+                <p style={{ fontSize: 11, color: "var(--sl-text-dim)", margin: 0 }}>Drop here</p>
+              </div>
             )}
           </div>
         )}
@@ -271,12 +262,20 @@ export default function TrackerClient({
   initialApplications: Application[];
   isPack: boolean;
 }) {
-  const [applications, setApplications] =
-    useState<Application[]>(initialApplications);
+  const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [showModal, setShowModal] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  // Group by status
+  // Celebration state
+  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: "", visible: false });
+  const [confetti, setConfetti] = useState<{ active: boolean; intensity: "normal" | "big" }>({ active: false, intensity: "normal" });
+  const [offerCard, setOfferCard] = useState<{ company: string; role: string } | null>(null);
+
+  function showToast(message: string) {
+    setToast({ message, visible: true });
+    setTimeout(() => setToast((t) => ({ ...t, visible: false })), 2500);
+  }
+
   const byStatus = (status: ApplicationStatus) =>
     applications.filter((a) => a.status === status);
 
@@ -286,6 +285,7 @@ export default function TrackerClient({
     if (destination.droppableId === source.droppableId) return;
 
     const newStatus = destination.droppableId as ApplicationStatus;
+    const movedApp = applications.find((a) => a.id === draggableId);
 
     // Optimistic update
     setApplications((prev) =>
@@ -300,6 +300,19 @@ export default function TrackerClient({
         body: JSON.stringify({ status: newStatus }),
       });
       if (!res.ok) throw new Error("Failed to update");
+
+      // Trigger celebrations after confirmed save
+      if (newStatus === "screening") {
+        showToast("Moving forward — nice.");
+      } else if (newStatus === "interview") {
+        showToast("Interview stage! You got this.");
+        setConfetti({ active: true, intensity: "normal" });
+        setTimeout(() => setConfetti({ active: false, intensity: "normal" }), 3000);
+      } else if (newStatus === "offer" && movedApp) {
+        setConfetti({ active: true, intensity: "big" });
+        setOfferCard({ company: movedApp.company, role: movedApp.role });
+        setTimeout(() => setConfetti({ active: false, intensity: "big" }), 6000);
+      }
     } catch {
       // Revert on failure
       setApplications((prev) =>
@@ -335,13 +348,11 @@ export default function TrackerClient({
   }
 
   async function handleDelete(id: string) {
-    // Optimistic
     setApplications((prev) => prev.filter((a) => a.id !== id));
     try {
       const res = await fetch(`/api/applications/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete");
     } catch {
-      // Refetch on failure — simple recovery
       window.location.reload();
     }
   }
@@ -351,17 +362,15 @@ export default function TrackerClient({
     (a) => !["rejected", "withdrawn"].includes(a.status),
   ).length;
 
-  if (!true) return <PaywallOverlay />;
+  if (!isPack) return <PaywallOverlay />;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
       {/* Header bar */}
-      <div className="border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-sm font-semibold text-gray-900">
-            Application Tracker
-          </h1>
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+      <div style={{ borderBottom: "1px solid var(--sl-border)", background: "var(--sl-base)", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <h1 style={{ fontSize: 13, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>Application Tracker</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: "var(--sl-text-muted)" }}>
             <span>{totalApps} total</span>
             <span>·</span>
             <span>{activeApps} active</span>
@@ -369,23 +378,27 @@ export default function TrackerClient({
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+          style={{
+            padding: "6px 14px",
+            background: "var(--sl-gradient-accent)",
+            color: "#fff",
+            fontSize: 12,
+            fontWeight: 500,
+            borderRadius: "var(--sl-radius-lg)",
+            border: "none",
+            cursor: "pointer",
+          }}
         >
           + Add application
         </button>
       </div>
 
       {/* Kanban board */}
-      <div className="p-4 overflow-x-auto">
+      <div style={{ padding: 16, overflowX: "auto" }}>
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-5 gap-3 min-w-[900px]">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 8, minWidth: 900 }}>
             {COLUMNS.map((col) => (
-              <Column
-                key={col.id}
-                col={col}
-                apps={byStatus(col.id)}
-                onDelete={handleDelete}
-              />
+              <Column key={col.id} col={col} apps={byStatus(col.id)} onDelete={handleDelete} />
             ))}
           </div>
         </DragDropContext>
@@ -393,27 +406,31 @@ export default function TrackerClient({
 
       {/* Empty state */}
       {applications.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-sm font-medium text-gray-900 mb-1">
-            No applications yet
-          </p>
-          <p className="text-xs text-gray-400 mb-4">
-            Add your first application to start tracking
-          </p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 0", textAlign: "center" }}>
+          <p style={{ fontSize: 14, fontWeight: 500, color: "var(--sl-text)", marginBottom: 4 }}>No applications yet</p>
+          <p style={{ fontSize: 12, color: "var(--sl-text-muted)", marginBottom: 16 }}>Add your first application to start tracking</p>
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+            style={{ padding: "8px 16px", background: "var(--sl-gradient-accent)", color: "#fff", fontSize: 12, fontWeight: 500, borderRadius: "var(--sl-radius-lg)", border: "none", cursor: "pointer" }}
           >
             + Add application
           </button>
         </div>
       )}
 
-      {showModal && (
-        <AddApplicationModal
-          onClose={() => setShowModal(false)}
-          onAdd={handleAdd}
+      {/* Celebration layers */}
+      <Toast message={toast.message} visible={toast.visible} />
+      <Confetti active={confetti.active} intensity={confetti.intensity} />
+      {offerCard && (
+        <OfferCelebration
+          company={offerCard.company}
+          role={offerCard.role}
+          onClose={() => setOfferCard(null)}
         />
+      )}
+
+      {showModal && (
+        <AddApplicationModal onClose={() => setShowModal(false)} onAdd={handleAdd} />
       )}
     </div>
   );

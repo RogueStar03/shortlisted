@@ -28,7 +28,7 @@ export default async function TrackerPage() {
   const applications = isPack ? await getApplications() : [];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
       <Navbar userEmail={user.email} />
       <TrackerClient
         initialApplications={applications}

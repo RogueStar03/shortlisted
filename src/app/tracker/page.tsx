@@ -11,29 +11,12 @@ export default async function TrackerPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth?next=/tracker");
 
-  // Check plan
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan, plan_expires_at")
-    .eq("id", user.id)
-    .single();
-
-  const now = new Date();
-  const isPack =
-    profile?.plan === "pack" &&
-    profile?.plan_expires_at &&
-    new Date(profile.plan_expires_at) > now;
-
-  // Fetch applications — empty array for free users (paywall shown client side)
-  const applications = isPack ? await getApplications(user.id) : [];
+  const applications = await getApplications(user.id);
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
       <Navbar userEmail={user.email} />
-      <TrackerClient
-        initialApplications={applications}
-        isPack={isPack ?? false}
-      />
+      <TrackerClient initialApplications={applications} />
     </div>
   );
 }

@@ -128,36 +128,13 @@ export default async function AccountPage() {
             </div>
           )}
 
-          {!isPack && (
-            <div style={{ padding: "20px 24px", borderTop: "1px solid var(--sl-border)" }}>
-              <p style={{ fontSize: 12, color: "var(--sl-text-muted)", marginBottom: 12, lineHeight: 1.6 }}>
-                Upgrade to get the application tracker, follow-up reminders, and analytics.
-              </p>
-              <Link
-                href="/#pricing"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  padding: "8px 16px",
-                  background: "var(--sl-gradient-accent)",
-                  color: "#fff",
-                  fontSize: 12,
-                  fontWeight: 500,
-                  borderRadius: "var(--sl-radius-lg)",
-                  textDecoration: "none",
-                }}
-              >
-                Get Placement Pack →
-              </Link>
-            </div>
-          )}
         </div>
 
         {/* Actions */}
         <div style={cardStyle}>
           {[
             { href: "/analyze", label: "Resume Analyzer", show: true },
-            { href: "/tracker", label: "Application Tracker", show: isPack },
+            { href: "/tracker", label: "Application Tracker", show: true },
             { href: "/privacy", label: "Privacy Policy", show: true, dim: true },
             { href: "/terms", label: "Terms of Service", show: true, dim: true },
           ]

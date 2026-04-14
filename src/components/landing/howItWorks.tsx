@@ -191,9 +191,9 @@ export default function HowItWorks() {
   }
 
   return (
-    <section id="how-it-works" className="bg-white py-20">
+    <section id="how-it-works" className="py-20" style={{ background: "var(--sl-surface)" }}>
       <div className="max-w-5xl mx-auto px-6">
-        <h2 className="text-2xl font-bold text-center mb-12">How it works</h2>
+        <h2 className="text-2xl font-bold text-center mb-12" style={{ color: "var(--sl-text)" }}>How it works</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-24 items-center">
           {/* Left — mock browser fades between states */}
@@ -210,28 +210,26 @@ export default function HowItWorks() {
               <button
                 key={step}
                 onClick={() => goTo(i)}
-                className={`text-left flex gap-4 items-start p-4 rounded-xl transition-all duration-200 ${
-                  active === i
-                    ? "bg-blue-50 border border-blue-100"
-                    : "hover:bg-gray-50 border border-transparent"
-                }`}
+                className="text-left flex gap-4 items-start p-4 rounded-xl transition-all duration-200"
+                style={{
+                  background: active === i ? "var(--sl-accent-glow)" : "transparent",
+                  border: active === i ? "1px solid rgba(124,106,255,0.25)" : "1px solid transparent",
+                }}
               >
                 <div
-                  className={`text-xs font-mono font-bold shrink-0 mt-0.5 ${
-                    active === i ? "text-blue-500" : "text-gray-300"
-                  }`}
+                  className="text-xs font-mono font-bold shrink-0 mt-0.5"
+                  style={{ color: active === i ? "var(--sl-accent)" : "var(--sl-text-dim)" }}
                 >
                   {step}
                 </div>
                 <div>
                   <div
-                    className={`text-sm font-semibold mb-1 ${
-                      active === i ? "text-gray-900" : "text-gray-500"
-                    }`}
+                    className="text-sm font-semibold mb-1"
+                    style={{ color: active === i ? "var(--sl-text)" : "var(--sl-text-muted)" }}
                   >
                     {title}
                   </div>
-                  <div className="text-sm text-gray-400 leading-relaxed">
+                  <div className="text-sm leading-relaxed" style={{ color: "var(--sl-text-dim)" }}>
                     {desc}
                   </div>
                 </div>
@@ -244,9 +242,11 @@ export default function HowItWorks() {
                 <button
                   key={stepItem.step}
                   onClick={() => goTo(i)}
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    active === i ? "w-6 bg-blue-500" : "w-2 bg-gray-200"
-                  }`}
+                  className="h-1 rounded-full transition-all duration-300"
+                  style={{
+                    width: active === i ? 24 : 8,
+                    background: active === i ? "var(--sl-accent)" : "var(--sl-border-light)",
+                  }}
                 />
               ))}
             </div>

@@ -1,37 +1,44 @@
 import Link from "next/link";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "Privacy Policy — Shortlisted",
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="border-b border-gray-100">
+    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
+      <nav style={{ borderBottom: "1px solid var(--sl-border)" }}>
         <div className="w-full px-6 lg:px-12 h-14 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold tracking-tight">
-            <span className="text-black">Short</span>
+            <span style={{ color: "var(--sl-text)" }}>Short</span>
             <span className="text-blue-600">listed</span>
           </Link>
-          <Link
-            href="/auth"
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            Sign in
-          </Link>
+          {user ? (
+            <Link href="/analyze" style={{ fontSize: 14, color: "var(--sl-text-muted)" }}>
+              Open app
+            </Link>
+          ) : (
+            <Link href="/auth" style={{ fontSize: 14, color: "var(--sl-text-muted)" }}>
+              Sign in
+            </Link>
+          )}
         </div>
       </nav>
 
       <main className="max-w-2xl mx-auto px-6 py-16">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 style={{ fontSize: 30, fontWeight: 700, color: "var(--sl-text)", marginBottom: 8 }}>
           Privacy Policy
         </h1>
-        <p className="text-sm text-gray-400 mb-10">Last updated: March 2026</p>
+        <p style={{ fontSize: 13, color: "var(--sl-text-dim)", marginBottom: 40 }}>Last updated: March 2026</p>
 
         {/* Human note first */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-10">
-          <p className="text-sm text-blue-800 leading-relaxed">
-            <span className="font-semibold">A note from the developer:</span>{" "}
+        <div style={{ background: "var(--sl-accent-glow)", border: "1px solid rgba(124,106,255,0.25)", borderRadius: "var(--sl-radius-xl)", padding: 20, marginBottom: 40 }}>
+          <p style={{ fontSize: 13, color: "var(--sl-accent-light)", lineHeight: 1.7 }}>
+            <span style={{ fontWeight: 600 }}>A note from the developer:</span>{" "}
             Shortlisted is an indie project built by one person to help job
             seekers. I have no interest in your data, no advertising partners,
             and no investors asking me to monetise your information. This policy
@@ -40,13 +47,13 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        <div className="space-y-10 text-sm text-gray-700 leading-relaxed">
+        <div className="space-y-10" style={{ fontSize: 13, color: "var(--sl-text-muted)", lineHeight: 1.7 }}>
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               1. Who we are
             </h2>
             <p>
-              Shortlisted ("we", "us", "our") is an independent software product
+              Shortlisted (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) is an independent software product
               operated by an individual developer based in India. This service
               is offered at shortlisted.app and related subdomains. For queries,
               contact us at the email address listed on the platform.
@@ -54,13 +61,13 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               2. What data we collect and why
             </h2>
 
             <div className="space-y-4">
               <div>
-                <p className="font-medium text-gray-800 mb-1">
+                <p style={{ fontWeight: 500, color: "var(--sl-text)", marginBottom: 4 }}>
                   Account information
                 </p>
                 <p>
@@ -72,13 +79,13 @@ export default function PrivacyPage() {
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-800 mb-1">
+                <p style={{ fontWeight: 500, color: "var(--sl-text)", marginBottom: 4 }}>
                   Resume and job description text
                 </p>
                 <p>
                   Resume analysis runs entirely in your browser. The text you
                   paste into the resume and job description fields{" "}
-                  <span className="font-medium text-gray-900">
+                  <span style={{ fontWeight: 500, color: "var(--sl-text)" }}>
                     never leaves your device
                   </span>{" "}
                   during analysis — no server receives it, no database stores
@@ -94,7 +101,7 @@ export default function PrivacyPage() {
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-800 mb-1">Usage data</p>
+                <p style={{ fontWeight: 500, color: "var(--sl-text)", marginBottom: 4 }}>Usage data</p>
                 <p>
                   We collect basic anonymised usage information (pages visited,
                   feature usage frequency) to understand how the product is
@@ -103,11 +110,11 @@ export default function PrivacyPage() {
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-800 mb-1">Payment data</p>
+                <p style={{ fontWeight: 500, color: "var(--sl-text)", marginBottom: 4 }}>Payment data</p>
                 <p>
                   Placement Pack access is sold as a one-time purchase — there
                   is no automatic renewal. Payments are processed by Razorpay.
-                  We do not store your card, UPI, or banking details. Razorpay's
+                  We do not store your card, UPI, or banking details. Razorpay&apos;s
                   privacy policy governs payment data handling.
                 </p>
               </div>
@@ -115,7 +122,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               3. What we do not do
             </h2>
             <ul className="space-y-2 list-none">
@@ -135,7 +142,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               4. Future use of data for algorithm improvement or AI features
             </h2>
             <p>
@@ -152,7 +159,7 @@ export default function PrivacyPage() {
                 "Never use data from users who have not opted in.",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
-                  <span className="text-blue-400 shrink-0 mt-0.5">→</span>
+                  <span style={{ color: "var(--sl-accent-light)" }} className="shrink-0 mt-0.5">→</span>
                   {item}
                 </li>
               ))}
@@ -163,7 +170,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               5. Data storage and security
             </h2>
             <p>
@@ -181,7 +188,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               6. Data retention
             </h2>
             <p>
@@ -194,7 +201,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               7. Your rights under Indian law
             </h2>
             <p>
@@ -210,7 +217,7 @@ export default function PrivacyPage() {
                 "Nominate a person to exercise these rights on your behalf.",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
-                  <span className="text-gray-300 shrink-0 mt-0.5">—</span>
+                  <span style={{ color: "var(--sl-text-dim)" }} className="shrink-0 mt-0.5">—</span>
                   {item}
                 </li>
               ))}
@@ -222,7 +229,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               8. Cookies
             </h2>
             <p>
@@ -233,12 +240,12 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">
+            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
               9. Changes to this policy
             </h2>
             <p>
               If we make material changes to this policy, we will notify
-              signed-in users by email and update the "last updated" date above.
+              signed-in users by email and update the &ldquo;last updated&rdquo; date above.
               Continued use of the service after notification constitutes
               acceptance of the revised policy.
             </p>
@@ -246,23 +253,17 @@ export default function PrivacyPage() {
         </div>
       </main>
 
-      <footer className="border-t border-gray-100 mt-16">
+      <footer style={{ borderTop: "1px solid var(--sl-border)", marginTop: 64 }}>
         <div className="w-full px-6 lg:px-12 py-8 flex items-center justify-between">
           <Link href="/" className="text-sm font-bold tracking-tight">
-            <span className="text-black">Short</span>
+            <span style={{ color: "var(--sl-text)" }}>Short</span>
             <span className="text-blue-600">listed</span>
           </Link>
           <div className="flex gap-4">
-            <Link
-              href="/privacy"
-              className="text-xs text-gray-400 hover:text-gray-600"
-            >
+            <Link href="/privacy" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
               Privacy
             </Link>
-            <Link
-              href="/terms"
-              className="text-xs text-gray-400 hover:text-gray-600"
-            >
+            <Link href="/terms" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
               Terms
             </Link>
           </div>

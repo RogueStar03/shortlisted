@@ -9,9 +9,15 @@ export default function Card({
 }) {
   return (
     <div
-      className={`rounded-xl border bg-white p-5 ${
-        highlight ? "border-blue-200 bg-blue-50" : "border-gray-100"
-      } ${className}`}
+      style={{
+        borderRadius: "var(--sl-radius-xl)",
+        border: highlight
+          ? "1px solid rgba(124,106,255,0.35)"
+          : "1px solid var(--sl-border)",
+        background: highlight ? "var(--sl-accent-glow)" : "var(--sl-card)",
+        padding: 20,
+      }}
+      className={className}
     >
       {children}
     </div>

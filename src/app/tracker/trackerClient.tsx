@@ -12,7 +12,6 @@ import type {
   ApplicationStatus,
 } from "@/lib/supabase/applications";
 import AddApplicationModal from "./addApplicationModal";
-import Link from "next/link";
 import ScoreRing from "@/components/ui/ScoreRing";
 import Toast from "@/components/tracker/Toast";
 import Confetti from "@/components/tracker/Confetti";
@@ -31,63 +30,6 @@ const COLUMNS: {
   { id: "offer", label: "Offer", stageVar: "var(--sl-stage-offer)" },
   { id: "rejected", label: "Rejected", stageVar: "var(--sl-stage-rejected)" },
 ];
-
-// ── Paywall ───────────────────────────────────────────────────────────────────
-function PaywallOverlay() {
-  return (
-    <div style={{ position: "relative", minHeight: 600, background: "var(--sl-base)" }}>
-      {/* Blurred fake board */}
-      <div style={{ filter: "blur(4px)", pointerEvents: "none", userSelect: "none" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, padding: "24px 16px" }}>
-          {COLUMNS.map((col) => (
-            <div key={col.id} style={{ background: "var(--sl-surface)", borderRadius: "var(--sl-radius-xl)", padding: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 7, height: 7, borderRadius: "50%", background: col.stageVar }} />
-                <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>{col.label}</span>
-              </div>
-              {[1, 2].map((i) => (
-                <div key={i} style={{ background: "var(--sl-card)", borderRadius: "var(--sl-radius-xl)", padding: 12, marginBottom: 8 }}>
-                  <div style={{ height: 10, background: "var(--sl-card-hover)", borderRadius: 4, width: "75%", marginBottom: 6 }} />
-                  <div style={{ height: 8, background: "var(--sl-surface)", borderRadius: 4, width: "50%" }} />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Overlay */}
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ background: "var(--sl-surface)", border: "1px solid var(--sl-border-light)", borderRadius: "var(--sl-radius-2xl)", boxShadow: "var(--sl-shadow-modal)", padding: 32, maxWidth: 360, width: "100%", textAlign: "center" }}>
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--sl-accent-glow)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-            <span style={{ color: "var(--sl-accent)", fontSize: 18 }}>▦</span>
-          </div>
-          <h2 style={{ fontSize: 15, fontWeight: 600, color: "var(--sl-text)", marginBottom: 8 }}>Application Tracker</h2>
-          <p style={{ fontSize: 13, color: "var(--sl-text-muted)", marginBottom: 20, lineHeight: 1.6 }}>
-            Track every application, move cards as you progress, and never lose track of where you stand.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12, color: "var(--sl-text-muted)", marginBottom: 24, textAlign: "left" }}>
-            {["Kanban pipeline — Applied to Offer", "Notes and JD link per application", "Follow-up reminders", "Analytics dashboard"].map((f) => (
-              <div key={f} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ color: "var(--sl-success)" }}>✓</span>
-                {f}
-              </div>
-            ))}
-          </div>
-          <Link
-            href="/#pricing"
-            style={{ display: "block", padding: "10px 0", background: "var(--sl-gradient-accent)", color: "#fff", fontSize: 13, fontWeight: 500, borderRadius: "var(--sl-radius-lg)", textDecoration: "none" }}
-          >
-            Get Placement Pack →
-          </Link>
-          <p style={{ marginTop: 12, fontSize: 11, color: "var(--sl-text-dim)" }}>
-            One-time purchase · No auto-renewal · 7-day refund
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── Confirm Dialog ───────────────────────────────────────────────────────────
 function ConfirmDialog({
@@ -301,10 +243,8 @@ function Column({
 // ── Main Tracker Client ───────────────────────────────────────────────────────
 export default function TrackerClient({
   initialApplications,
-  isPack,
 }: {
   initialApplications: Application[];
-  isPack: boolean;
 }) {
   const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [showModal, setShowModal] = useState(false);
@@ -409,8 +349,6 @@ export default function TrackerClient({
   const activeApps = applications.filter(
     (a) => !["rejected", "withdrawn"].includes(a.status),
   ).length;
-
-  if (!isPack) return <PaywallOverlay />;
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>

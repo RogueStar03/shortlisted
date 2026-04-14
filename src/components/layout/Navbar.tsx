@@ -57,7 +57,7 @@ export default function Navbar({ userEmail }: { userEmail?: string }) {
         }}
       >
         <Link
-          href="/analyze"
+          href="/"
           style={{
             textDecoration: "none",
             fontSize: 18,

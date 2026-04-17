@@ -147,7 +147,7 @@ export default function AnalyzeClient() {
           Resume Analyzer
         </h1>
         <p style={{ marginTop: 4, fontSize: 13, color: "var(--sl-text-muted)" }}>
-          Paste your resume and the job description. We'll show you exactly what's missing.
+          Paste your resume and the job description. We&apos;ll show you exactly what&apos;s missing.
         </p>
       </div>
 

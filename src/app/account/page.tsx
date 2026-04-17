@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Link from "next/link";
+import { isPack } from "@/lib/auth/isPack";
 
 export const metadata = { title: "Account — Shortlisted" };
 
@@ -33,11 +34,7 @@ export default async function AccountPage() {
     .eq("id", user.id)
     .single();
 
-  const now = new Date();
-  const isPack =
-    profile?.plan === "pack" &&
-    profile?.plan_expires_at &&
-    new Date(profile.plan_expires_at) > now;
+  const hasPack = isPack(profile);
 
   const expiryDate = profile?.plan_expires_at
     ? new Date(profile.plan_expires_at).toLocaleDateString("en-IN", {
@@ -104,7 +101,7 @@ export default async function AccountPage() {
 
         {/* Plan card */}
         <div style={cardStyle}>
-          <div style={{ ...rowStyle }}>
+          <div style={{ ...rowStyle, borderBottom: "none" }}>
             <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Current plan</span>
             <span
               style={{
@@ -112,22 +109,21 @@ export default async function AccountPage() {
                 fontWeight: 600,
                 padding: "4px 10px",
                 borderRadius: 999,
-                ...(isPack
+                ...(hasPack
                   ? { background: "var(--sl-success-bg)", color: "var(--sl-success)" }
                   : { background: "var(--sl-card)", color: "var(--sl-text-muted)" }),
               }}
             >
-              {isPack ? "Placement Pack" : "Free"}
+              {hasPack ? "Placement Pack" : "Free"}
             </span>
           </div>
 
-          {isPack && expiryDate && (
-            <div style={{ ...rowStyle }}>
+          {hasPack && expiryDate && (
+            <div style={{ ...rowStyle, borderBottom: "none" }}>
               <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Access until</span>
               <span style={{ fontSize: 12, color: "var(--sl-text)" }}>{expiryDate}</span>
             </div>
           )}
-
         </div>
 
         {/* Actions */}

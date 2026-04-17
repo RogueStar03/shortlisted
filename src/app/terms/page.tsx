@@ -1,43 +1,36 @@
 import Link from "next/link";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "Terms of Service — Shortlisted",
 };
 
-export default async function TermsPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+export default function TermsPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
-      <nav style={{ borderBottom: "1px solid var(--sl-border)" }}>
+    <div className="min-h-screen bg-white">
+      <nav className="border-b border-gray-100">
         <div className="w-full px-6 lg:px-12 h-14 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold tracking-tight">
-            <span style={{ color: "var(--sl-text)" }}>Short</span>
+            <span className="text-black">Short</span>
             <span className="text-blue-600">listed</span>
           </Link>
-          {user ? (
-            <Link href="/analyze" style={{ fontSize: 14, color: "var(--sl-text-muted)" }}>
-              Open app
-            </Link>
-          ) : (
-            <Link href="/auth" style={{ fontSize: 14, color: "var(--sl-text-muted)" }}>
-              Sign in
-            </Link>
-          )}
+          <Link
+            href="/auth"
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            Sign in
+          </Link>
         </div>
       </nav>
 
       <main className="max-w-2xl mx-auto px-6 py-16">
-        <h1 style={{ fontSize: 30, fontWeight: 700, color: "var(--sl-text)", marginBottom: 8 }}>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Terms of Service
         </h1>
-        <p style={{ fontSize: 13, color: "var(--sl-text-dim)", marginBottom: 40 }}>Last updated: March 2026</p>
+        <p className="text-sm text-gray-400 mb-10">Last updated: March 2026</p>
 
-        <div style={{ background: "var(--sl-accent-glow)", border: "1px solid rgba(124,106,255,0.25)", borderRadius: "var(--sl-radius-xl)", padding: 20, marginBottom: 40 }}>
-          <p style={{ fontSize: 13, color: "var(--sl-accent-light)", lineHeight: 1.7 }}>
-            <span style={{ fontWeight: 600 }}>Plain English summary:</span> Use
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-10">
+          <p className="text-sm text-blue-800 leading-relaxed">
+            <span className="font-semibold">Plain English summary:</span> Use
             this service honestly and don&apos;t abuse it. I built this to help
             people — please use it for that. Any money collected goes toward
             keeping the service running and building new things, not profit. If
@@ -50,13 +43,13 @@ export default async function TermsPage() {
           </p>
         </div>
 
-        <div className="space-y-10" style={{ fontSize: 13, color: "var(--sl-text-muted)", lineHeight: 1.7 }}>
+        <div className="space-y-10 text-sm text-gray-700 leading-relaxed">
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               1. Acceptance of terms
             </h2>
             <p>
-              By accessing or using Shortlisted (&ldquo;Service&rdquo;), you agree to be
+              By accessing or using Shortlisted (&quot;Service&quot;), you agree to be
               bound by these Terms of Service. If you do not agree, please do
               not use the Service. These terms constitute a legally binding
               agreement between you and the individual developer operating
@@ -65,7 +58,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               2. Description of service
             </h2>
             <p>
@@ -83,7 +76,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               3. Acceptable use
             </h2>
             <p>
@@ -107,7 +100,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               4. Payments and refunds
             </h2>
             <p>
@@ -121,7 +114,7 @@ export default async function TermsPage() {
               (INR) inclusive of applicable taxes.
             </p>
             <p className="mt-2">
-              <span style={{ fontWeight: 500, color: "var(--sl-text)" }}>Refund policy:</span>{" "}
+              <span className="font-medium text-gray-800">Refund policy:</span>{" "}
               If you are not satisfied, contact us within 7 days of purchase and
               we will issue a full refund, no questions asked. After 7 days,
               refunds are not available. We trust you to use this honestly — the
@@ -135,7 +128,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               5. Account responsibility
             </h2>
             <p>
@@ -147,7 +140,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               6. Intellectual property
             </h2>
             <p>
@@ -163,7 +156,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               7. Service availability and limitations
             </h2>
             <p>
@@ -193,7 +186,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               8. Limitation of liability
             </h2>
             <p>
@@ -205,7 +198,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               9. Termination
             </h2>
             <p>
@@ -216,7 +209,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               10. Governing law
             </h2>
             <p>
@@ -228,7 +221,7 @@ export default async function TermsPage() {
           </section>
 
           <section>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: "var(--sl-text)", marginBottom: 12 }}>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
               11. Changes to terms
             </h2>
             <p>
@@ -238,8 +231,8 @@ export default async function TermsPage() {
             </p>
           </section>
 
-          <section style={{ background: "var(--sl-surface)", borderRadius: "var(--sl-radius-xl)", padding: 20, border: "1px solid var(--sl-border)" }}>
-            <p style={{ color: "var(--sl-text-muted)", fontStyle: "italic" }}>
+          <section className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <p className="text-gray-600 italic">
               This is a solo project built in good faith. If something is
               unclear, unfair, or broken — reach out. I would rather fix the
               problem than argue about terms.
@@ -248,20 +241,29 @@ export default async function TermsPage() {
         </div>
       </main>
 
-      <footer style={{ borderTop: "1px solid var(--sl-border)", marginTop: 64 }}>
+      <footer className="border-t border-gray-100 mt-16">
         <div className="w-full px-6 lg:px-12 py-8 flex items-center justify-between">
           <Link href="/" className="text-sm font-bold tracking-tight">
-            <span style={{ color: "var(--sl-text)" }}>Short</span>
+            <span className="text-black">Short</span>
             <span className="text-blue-600">listed</span>
           </Link>
           <div className="flex gap-4">
-            <Link href="/privacy" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
+            <Link
+              href="/privacy"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
               Privacy
             </Link>
-            <Link href="/terms" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
+            <Link
+              href="/terms"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
               Terms
             </Link>
-            <Link href="/contact" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
+            <Link
+              href="/contact"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
               Contact
             </Link>
           </div>

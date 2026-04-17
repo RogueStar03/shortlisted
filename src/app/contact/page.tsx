@@ -1,46 +1,38 @@
 import Link from "next/link";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "Contact — Shortlisted",
 };
 
-export default async function ContactPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+export default function ContactPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "var(--sl-base)" }}>
-      <nav style={{ borderBottom: "1px solid var(--sl-border)" }}>
+    <div className="min-h-screen bg-white">
+      <nav className="border-b border-gray-100">
         <div className="w-full px-6 lg:px-12 h-14 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold tracking-tight">
-            <span style={{ color: "var(--sl-text)" }}>Short</span>
-            <span className="text-blue-600">listed</span>
+            Short<span className="text-blue-600">listed</span>
           </Link>
-          {user ? (
-            <Link href="/analyze" style={{ fontSize: 14, color: "var(--sl-text-muted)" }}>
-              Open app
-            </Link>
-          ) : (
-            <Link href="/auth" style={{ fontSize: 14, color: "var(--sl-text-muted)" }}>
-              Sign in
-            </Link>
-          )}
+          <Link
+            href="/auth"
+            className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            Sign in
+          </Link>
         </div>
       </nav>
 
       <main className="max-w-2xl mx-auto px-6 py-16">
         {/* Intro */}
         <div className="mb-12">
-          <h1 className="text-3xl font-bold mb-6" style={{ color: "var(--sl-text)" }}>
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
             Hey, I&apos;m Abhishek 👋
           </h1>
-          <div className="space-y-4 text-sm leading-relaxed" style={{ color: "var(--sl-text-muted)" }}>
+          <div className="space-y-4 text-sm text-gray-600 leading-relaxed">
             <p>
               I built Shortlisted for myself. A while back I was going through
               the exhausting cycle of applying to jobs — tweaking my resume for
               every JD, maintaining a chaotic Excel sheet to track applications,
-              getting ghosted after &ldquo;we&apos;ll be in touch&rdquo;, and wondering if the
+              getting ghosted after &quot;we&apos;ll be in touch&quot;, and wondering if the
               ATS even read past my name.
             </p>
             <p>
@@ -54,7 +46,7 @@ export default async function ContactPage() {
               their spare time. Every rupee collected goes toward keeping the
               servers on and building the next useful thing.
             </p>
-            <p style={{ color: "var(--sl-text-dim)", fontStyle: "italic" }}>
+            <p className="text-gray-500 italic">
               (And yes, if you have a good referral — feel free to send it my
               way. I won&apos;t say no.)
             </p>
@@ -62,22 +54,28 @@ export default async function ContactPage() {
         </div>
 
         {/* What I built with */}
-        <div style={{ background: "var(--sl-surface)", border: "1px solid var(--sl-border)", borderRadius: "var(--sl-radius-xl)", padding: 20, marginBottom: 40 }}>
-          <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--sl-text-dim)" }}>
+        <div className="bg-gray-50 border border-gray-100 rounded-xl p-5 mb-10">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
             Built with
           </p>
           <div className="flex flex-wrap gap-2">
-            {["Next.js", "Tailwind CSS", "Supabase", "Vercel", "Razorpay", "Claude"].map((tech) => (
+            {[
+              "Next.js",
+              "Tailwind CSS",
+              "Supabase",
+              "Vercel",
+              "Razorpay",
+              "Claude",
+            ].map((tech) => (
               <span
                 key={tech}
-                className="text-xs font-medium px-2.5 py-1 rounded-full"
-                style={{ background: "var(--sl-card)", border: "1px solid var(--sl-border-light)", color: "var(--sl-text-muted)" }}
+                className="text-xs font-medium px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-600"
               >
                 {tech}
               </span>
             ))}
           </div>
-          <p className="text-xs mt-3" style={{ color: "var(--sl-text-dim)" }}>
+          <p className="text-xs text-gray-400 mt-3">
             The analysis engine is pure TypeScript running in your browser — no
             server sees your resume.
           </p>
@@ -85,22 +83,22 @@ export default async function ContactPage() {
 
         {/* Contact */}
         <div className="mb-10">
-          <h2 className="text-base font-semibold mb-4" style={{ color: "var(--sl-text)" }}>
+          <h2 className="text-base font-semibold text-gray-900 mb-4">
             Get in touch
           </h2>
-          <div className="space-y-3 text-sm" style={{ color: "var(--sl-text-muted)" }}>
+          <div className="space-y-3 text-sm text-gray-600">
             <p>
               For anything — bug reports, feature requests, refund requests,
               feedback, or just to say hi:
             </p>
+
             <a
               href="mailto:abhishekkayasth87@gmail.com"
-              className="inline-flex items-center gap-2 font-medium hover:underline"
-              style={{ color: "var(--sl-accent-light)" }}
+              className="inline-flex items-center gap-2 text-blue-600 hover:underline font-medium"
             >
               abhishekkayasth87@gmail.com
             </a>
-            <p className="text-xs" style={{ color: "var(--sl-text-dim)" }}>
+            <p className="text-xs text-gray-400">
               I check this regularly. Response time is usually within a day or
               two, sometimes longer if life is busy — but I will reply.
             </p>
@@ -109,7 +107,7 @@ export default async function ContactPage() {
 
         {/* What I respond to */}
         <div className="space-y-3">
-          <h2 className="text-base font-semibold mb-4" style={{ color: "var(--sl-text)" }}>
+          <h2 className="text-base font-semibold text-gray-900 mb-4">
             What I&apos;m happy to help with
           </h2>
           {[
@@ -132,35 +130,43 @@ export default async function ContactPage() {
           ].map(({ label, desc }) => (
             <div
               key={label}
-              className="flex gap-4 p-4 rounded-xl"
-              style={{ border: "1px solid var(--sl-border)", background: "var(--sl-card)" }}
+              className="flex gap-4 p-4 rounded-xl border border-gray-100 bg-white"
             >
-              <div className="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style={{ background: "var(--sl-accent)" }} />
+              <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-blue-400 mt-2" />
               <div>
-                <p className="text-sm font-medium mb-0.5" style={{ color: "var(--sl-text)" }}>
+                <p className="text-sm font-medium text-gray-900 mb-0.5">
                   {label}
                 </p>
-                <p className="text-sm" style={{ color: "var(--sl-text-muted)" }}>{desc}</p>
+                <p className="text-sm text-gray-500">{desc}</p>
               </div>
             </div>
           ))}
         </div>
       </main>
 
-      <footer style={{ borderTop: "1px solid var(--sl-border)", marginTop: 64 }}>
+      <footer className="border-t border-gray-100 mt-16">
         <div className="w-full px-6 lg:px-12 py-8 flex items-center justify-between">
           <Link href="/" className="text-sm font-bold tracking-tight">
-            <span style={{ color: "var(--sl-text)" }}>Short</span>
+            <span className="text-black">Short</span>
             <span className="text-blue-600">listed</span>
           </Link>
           <div className="flex gap-4">
-            <Link href="/privacy" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
+            <Link
+              href="/privacy"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
               Privacy
             </Link>
-            <Link href="/terms" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
+            <Link
+              href="/terms"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
               Terms
             </Link>
-            <Link href="/contact" style={{ fontSize: 12, color: "var(--sl-text-dim)" }}>
+            <Link
+              href="/contact"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
               Contact
             </Link>
           </div>

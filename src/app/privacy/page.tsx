@@ -86,11 +86,10 @@ export default function PrivacyPage() {
                   make lightly.
                 </p>
                 <p className="mt-2">
-                  If you use the Application Tracker (Placement Pack feature),
-                  job description text you attach to an application is stored in
-                  our database linked to your account so you can retrieve it
-                  later. You can delete any application and its associated data
-                  at any time.
+                  If you use the Application Tracker, job description text you
+                  attach to an application is stored in our database linked to
+                  your account so you can retrieve it later. You can delete any
+                  application and its associated data at any time.
                 </p>
               </div>
               <div>
@@ -100,15 +99,6 @@ export default function PrivacyPage() {
                   feature usage frequency) to understand how the product is
                   being used and where to improve it. This data is not linked to
                   your identity.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium text-gray-800 mb-1">Payment data</p>
-                <p>
-                  Placement Pack access is sold as a one-time purchase — there
-                  is no automatic renewal. Payments are processed by Razorpay.
-                  We do not store your card, UPI, or banking details. Razorpay&apos;s
-                  privacy policy governs payment data handling.
                 </p>
               </div>
             </div>

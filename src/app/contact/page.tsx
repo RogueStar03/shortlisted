@@ -43,8 +43,7 @@ export default function ContactPage() {
             <p>
               This isn&apos;t a startup. There&apos;s no team, no investors, no growth
               targets. It&apos;s a tool I genuinely use, maintained by one person in
-              their spare time. Every rupee collected goes toward keeping the
-              servers on and building the next useful thing.
+              their spare time.
             </p>
             <p className="text-gray-500 italic">
               (And yes, if you have a good referral — feel free to send it my
@@ -64,7 +63,6 @@ export default function ContactPage() {
               "Tailwind CSS",
               "Supabase",
               "Vercel",
-              "Razorpay",
               "Claude",
             ].map((tech) => (
               <span
@@ -114,10 +112,6 @@ export default function ContactPage() {
             {
               label: "Bug reports",
               desc: "Something broken? Tell me exactly what happened and I'll fix it.",
-            },
-            {
-              label: "Refund requests",
-              desc: "Paid and not happy? Email me within 7 days and I'll sort it out.",
             },
             {
               label: "Feature ideas",

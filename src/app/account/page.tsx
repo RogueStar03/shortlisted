@@ -2,7 +2,6 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Link from "next/link";
-import { isPack } from "@/lib/auth/isPack";
 
 export const metadata = { title: "Account — Shortlisted" };
 
@@ -28,22 +27,6 @@ export default async function AccountPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth?next=/account");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan, plan_expires_at, created_at")
-    .eq("id", user.id)
-    .single();
-
-  const hasPack = isPack(profile);
-
-  const expiryDate = profile?.plan_expires_at
-    ? new Date(profile.plan_expires_at).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : null;
-
   const joinedDate = user.created_at
     ? new Date(user.created_at).toLocaleDateString("en-IN", {
         day: "numeric",
@@ -66,7 +49,7 @@ export default async function AccountPage() {
         {/* Header */}
         <div style={{ marginBottom: 40 }}>
           <h1 style={{ fontSize: 20, fontWeight: 600, color: "var(--sl-text)", margin: 0 }}>Account</h1>
-          <p style={{ marginTop: 4, fontSize: 13, color: "var(--sl-text-muted)" }}>Your profile and plan details.</p>
+          <p style={{ marginTop: 4, fontSize: 13, color: "var(--sl-text-muted)" }}>Your profile details.</p>
         </div>
 
         {/* Profile card */}
@@ -97,33 +80,6 @@ export default async function AccountPage() {
               {user.app_metadata?.provider === "google" ? "Google" : "Email & Password"}
             </span>
           </div>
-        </div>
-
-        {/* Plan card */}
-        <div style={cardStyle}>
-          <div style={{ ...rowStyle, borderBottom: "none" }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Current plan</span>
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                padding: "4px 10px",
-                borderRadius: 999,
-                ...(hasPack
-                  ? { background: "var(--sl-success-bg)", color: "var(--sl-success)" }
-                  : { background: "var(--sl-card)", color: "var(--sl-text-muted)" }),
-              }}
-            >
-              {hasPack ? "Placement Pack" : "Free"}
-            </span>
-          </div>
-
-          {hasPack && expiryDate && (
-            <div style={{ ...rowStyle, borderBottom: "none" }}>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--sl-text-muted)" }}>Access until</span>
-              <span style={{ fontSize: 12, color: "var(--sl-text)" }}>{expiryDate}</span>
-            </div>
-          )}
         </div>
 
         {/* Actions */}

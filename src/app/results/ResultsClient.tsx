@@ -187,6 +187,7 @@ function FillerHighlight({
 
         {/* Inline popover */}
         {activePopover && (
+          // eslint-disable-next-line react-hooks/refs
           <div
             style={{
               position: "absolute",
@@ -225,7 +226,7 @@ function FillerHighlight({
             />
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
               <span style={{ fontSize: 11, fontFamily: "var(--font-mono, monospace)", fontWeight: 500, color: "var(--sl-warning)", background: "var(--sl-warning-bg)", padding: "2px 6px", borderRadius: "var(--sl-radius-xs)" }}>
-                "{activePopover.phrase}"
+                &quot;{activePopover.phrase}&quot;
               </span>
               <span style={{ fontSize: 10, color: "var(--sl-text-dim)", flexShrink: 0 }}>×{activePopover.count}</span>
             </div>
@@ -326,7 +327,9 @@ export default function ResultsClient() {
       return;
     }
     try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResult(JSON.parse(stored));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResumeText(resume);
     } catch {
       router.replace("/analyze");

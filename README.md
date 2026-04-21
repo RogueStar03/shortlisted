@@ -16,7 +16,7 @@ A resume keyword analyzer and job application tracker. Paste your resume and a j
 - Weighted match score — technical skills and tools rank higher than soft skills
 - Runs entirely client-side — your resume text never leaves your browser
 
-**Application Tracker (Placement Pack)**
+**Application Tracker**
 
 - Kanban board: Applied → Screening → Interview → Offer → Rejected
 - Drag-and-drop status updates with optimistic UI
@@ -57,7 +57,6 @@ Key decisions:
 | Auth      | Supabase Auth           | Google OAuth in 3 clicks. Auth UID = database UID — no glue code. RLS enforced at DB level.  |
 | Database  | Supabase Postgres       | Full SQL with joins and aggregations. RLS means the DB enforces access control, not the app. |
 | Hosting   | Vercel (Hobby)          | Free tier, auto-deploys on push, global CDN, preview URLs per PR.                            |
-| Payments  | Razorpay                | India-first. Native UPI. 2% flat fee. Direct INR settlement. No FIRC complexity.             |
 | Emails    | Resend                  | Deferred — needs custom domain first.                                                        |
 
 ### Why the analyzer runs client-side
@@ -91,8 +90,6 @@ Create `.env.local`:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_publishable_key
 SUPABASE_SECRET_KEY=your_secret_key
-RAZORPAY_KEY_ID=rzp_test_...
-RAZORPAY_KEY_SECRET=your_secret
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
@@ -149,7 +146,6 @@ src/
 | Auth (Google + email)             | ✅ Complete    |
 | Landing page                      | ✅ Complete    |
 | Application tracker (Kanban)      | 🔄 In progress    |
-| Payments (Razorpay)               | ⏳ Planned     |
 | Follow-up reminders               | ⏳ Planned     |
 | Analytics dashboard               | ⏳ Planned     |
 | PDF resume upload                 | ⏳ v2          |

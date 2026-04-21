@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { log } from "@/lib/log";
 
 export async function PATCH(
   request: Request,
@@ -21,8 +22,12 @@ export async function PATCH(
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error)
+  if (error) {
+    log.error("Failed to update application", { userId: user.id, route: `PATCH /api/applications/${id}`, msg: error.message });
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  log.info("Application updated", { userId: user.id, route: `PATCH /api/applications/${id}` });
   return NextResponse.json({ success: true });
 }
 
@@ -45,7 +50,11 @@ export async function DELETE(
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error)
+  if (error) {
+    log.error("Failed to delete application", { userId: user.id, route: `DELETE /api/applications/${id}`, msg: error.message });
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  log.info("Application deleted", { userId: user.id, route: `DELETE /api/applications/${id}` });
   return NextResponse.json({ success: true });
 }
